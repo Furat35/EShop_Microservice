@@ -5,12 +5,12 @@ namespace OrderService.Domain.AggregateModels.BuyerAggregate
 {
     public class PaymentMethod : BaseEntity
     {
-        public string Alias { get; set; }
-        public string CardNumber { get; set; }
-        public string SecurityNumber { get; set; }
-        public string CardHolderName { get; set; }
-        public DateTime Expiration { get; set; }
-        public int CardTypeId { get; set; }
+        public string Alias { get; private set; }
+        public string CardNumber { get; private set; }
+        public string SecurityNumber { get; private set; }
+        public string CardHolderName { get; private set; }
+        public DateTime Expiration { get; private set; }
+        public int CardTypeId { get; private set; }
         public CardType CardType { get; private set; }
         public PaymentMethod() { }
 

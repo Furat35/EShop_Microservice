@@ -4,9 +4,9 @@ namespace BasketService.Api.Core.Application.Repository
 {
     public interface IBasketRepository
     {
-        Task<CustomerBasket?> GetBasketAsync(Guid id);
+        Task<Basket?> GetBasketAsync(Guid id);
         IEnumerable<string> GetUsers();
-        Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket);
+        Task<bool> UpdateBasketAsync(Basket basket);
         Task<bool> DeleteBasketAsync(Guid id);
     }
 }

@@ -1,10 +1,80 @@
 version: '3.4'
 
-services: 
-    s_consul:
-        container_name: c_consul
-        image: consul
-        ports:
-            - 8500:8500
-            - 8600:8600/tcp
-            - 8600:8600/udp
+services:
+  # db's
+  basketdb:
+    image: redis
+
+  sqlserverdb:
+    image: mcr.microsoft.com/mssql/server
+
+  # catalogdb:
+  #   image: mcr.microsoft.com/mssql/server
+
+  # orderdb:
+  #   image: mcr.microsoft.com/mssql/server
+  
+  rabbitmq:
+    image: rabbitmq:3.12.12-management-alpine
+
+  basketservice.api:
+    image: ${DOCKER_REGISTRY-}basketserviceapi
+    build:
+      context: .
+      dockerfile: src/server/Services/BasketService/BasketService.Api/Dockerfile
+
+  identityservice.api:
+    image: ${DOCKER_REGISTRY-}identityserviceapi
+    build:
+      context: .
+      dockerfile: src/server/Services/IdentityService/IdentityService.Api/Dockerfile
+
+
+  catalogservice.api:
+    image: ${DOCKER_REGISTRY-}catalogserviceapi
+    build:
+      context: .
+      dockerfile: src/server/Services/CatalogService/CatalogService.Api/Dockerfile
+
+
+  notificationservice:
+    image: ${DOCKER_REGISTRY-}notificationservice
+    build:
+      context: .
+      dockerfile: src/server/Services/NotificationService/NotificationService/Dockerfile
+
+
+  paymentservice.api:
+    image: ${DOCKER_REGISTRY-}paymentserviceapi
+    build:
+      context: .
+      dockerfile: src/server/Services/PaymentService/PaymentService.Api/Dockerfile
+
+
+  orderservice.api:
+    image: ${DOCKER_REGISTRY-}orderserviceapi
+    build:
+      context: .
+      dockerfile: src/server/Services/OrderService/OrderService.Api/Dockerfile
+
+
+  web.apigateway:
+    image: ${DOCKER_REGISTRY-}webapigateway
+    build:
+      context: .
+      dockerfile: src/server/AppGateways/WebApiGateway/Web.ApiGateway/Dockerfile
+
+
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: src/server/Services/DiscountService/Discount.gRPC/Dockerfile
+
+
+  discount.api:
+    image: ${DOCKER_REGISTRY-}discountapi
+    build:
+      context: .
+      dockerfile: src/server/Services/DiscountService/Discount.Api/Dockerfile
+

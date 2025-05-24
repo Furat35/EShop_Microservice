@@ -5,9 +5,9 @@ namespace BasketService.Api.Core.Application.Services
 {
     public interface IBasketService
     {
-        Task<ResponseDto<CustomerBasket?>> GetBasketAsync(Guid id);
-        Task<ResponseDto<CustomerBasket?>> UpdateBasketAsync(CustomerBasket basket);
-        Task<ResponseDto<bool>> DeleteBasketAsync(Guid id);
+        Task<ResponseDto<Basket?>> GetBasketAsync();
+        Task<ResponseDto<bool>> UpdateBasketAsync(Basket basket);
+        Task<ResponseDto<bool>> DeleteBasketAsync();
         Task<ResponseDto<bool>> CheckoutAsync(BasketCheckout basketCheckout);
     }
 }

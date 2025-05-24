@@ -1,6 +1,8 @@
-﻿namespace CatalogService.Api.Core.Domain
+﻿using CommonLibrary.Models;
+
+namespace CatalogService.Api.Core.Domain
 {
-    public class CatalogItem
+    public class CatalogItem : IEntity<int>
     {
         public int Id { get; set; }
         public string Name { get; set; }

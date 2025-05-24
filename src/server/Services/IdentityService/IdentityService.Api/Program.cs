@@ -17,9 +17,23 @@ builder.Services.ConfigureConsul(builder.Configuration);
 builder.Services.AddHealthChecks();
 builder.Services.AddDbContext<IdentityDbContext>(opt =>
 {
-    opt.UseSqlServer(builder.Configuration["IdentityDbConnectionString"]);
+    opt.UseSqlServer(builder.Configuration["IdentityDbConnectionString"], sqlOptions =>
+    {
+        //sqlOptions.EnableRetryOnFailure(
+        //    maxRetryCount: 5,
+        //    maxRetryDelay: TimeSpan.FromSeconds(5),
+        //    errorNumbersToAdd: null
+        //);
+    });
     opt.EnableSensitiveDataLogging();
 });
+
+//var optionsBuilder = new DbContextOptionsBuilder<IdentityDbContext>()
+//              .UseSqlServer(builder.Configuration["IdentityDbConnectionString"]);
+
+
+//using var dbContext = new IdentityDbContext(optionsBuilder.Options);
+//    dbContext.Database.Migrate();
 
 var app = builder.Build();
 
@@ -29,6 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+    //if (app.Environment.IsProduction() && !await dbContext.Database.CanConnectAsync())
+    //    dbContext.Database.Migrate();
+}
 app.UseCustomExceptionHandling();
 
 app.UseHttpsRedirection();
@@ -39,11 +59,11 @@ app.MapHealthChecks("/health");
 app.MapControllers();
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-app.RegisterWithConsul(lifetime, conf =>
+app.RegisterWithConsul(lifetime, builder.Configuration, conf =>
 {
     conf.ID = "IdentityService-" + Guid.NewGuid();
     conf.Name = "IdentityService";
     conf.Tags = ["IdentityService", "Identity", "Jwt", "Token"];
-}, 5005);
+});
 
 app.Run();

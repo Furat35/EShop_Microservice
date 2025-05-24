@@ -1,0 +1,201 @@
+version: '3.4'
+
+services:
+  basketdb:
+    container_name: basketdb
+    ports:
+      - 6380:6379
+    volumes:
+      - /opt/app_data/redis/:/data
+    restart: always
+
+  sqlserverdb:
+    container_name: sqlserverdb
+    environment:
+        SA_PASSWORD: "Firat3521"
+        ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+        - "10433:1433" 
+    volumes:
+        - ./data:/var/opt/mssql/data
+        - ./log:/var/opt/mssql/log
+        - ./secrets:/var/opt/mssql/secrets
+     
+  # catalogdb:
+  #   container_name: catalogdb
+  #   environment:
+  #       SA_PASSWORD: "Firat3521"
+  #       ACCEPT_EULA: "Y"
+  #   restart: always
+  #   ports:
+  #       - "10434:1433" 
+  
+  # orderdb:
+  #   container_name: orderdb
+  #   environment:
+  #       SA_PASSWORD: "Firat3521"
+  #       ACCEPT_EULA: "Y"
+  #   restart: always
+  #   ports:
+  #       - "10435:1433" 
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+        - "5672:5672"
+        - "15672:15672" 
+
+  consul_service_discovery:
+    container_name: consul_service_discovery
+    image: hashicorp/consul
+    ports:
+        - 8500:8500
+        - 8600:8600/tcp
+        - 8600:8600/udp
+
+  basketservice.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10003
+      - "RedisSettings__ConnectionString=basketdb:6379"
+      - "RabbitMQSettings__Host=rabbitmq"
+      - "RabbitMQSettings__Port=5672"
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+      - "GrpcSettings__Url=http://discount.grpc:10006"
+    ports:
+      - "5003:10003"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - basketdb
+      - rabbitmq 
+      - consul_service_discovery
+      - discount.grpc
+
+  identityservice.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10005
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+      - "IdentityDbConnectionString=Server=sqlserverdb,1433;Database=IdentityDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+    ports:
+      - "5005:10005"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - sqlserverdb
+      - consul_service_discovery 
+
+  catalogservice.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10004
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+      - "ConnectionString=Server=sqlserverdb,1433;Database=CatalogDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+    ports:
+      - "5004:10004"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - sqlserverdb
+      - consul_service_discovery 
+
+  notificationservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - "RabbitMQSettings__Host=rabbitmq"
+      - "RabbitMQSettings__Port=5672"
+    depends_on:
+      - rabbitmq 
+
+  paymentservice.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10001
+      - "RabbitMQSettings__Host=rabbitmq"
+      - "RabbitMQSettings__Port=5672"
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+    ports:
+      - "5001:10001"
+    depends_on:
+      - consul_service_discovery
+      - rabbitmq 
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  orderservice.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10002
+      - "RabbitMQSettings__Host=rabbitmq"
+      - "RabbitMQSettings__Port=5672"
+      - "OrderDbConnectionString=Server=sqlserverdb,1433;Database=OrderDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+    ports:
+      - "5002:10002"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - consul_service_discovery
+      - sqlserverdb
+      - rabbitmq 
+
+  web.apigateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10000
+      - "GlobalConfiguration__BaseUrl=http://web.apigateway:10000"
+      - "GlobalConfiguration__ServiceDiscoveryProvider__Host=consul_service_discovery" 
+      - "GlobalConfiguration__ServiceDiscoveryProvider__Port=8500" 
+      - "GlobalConfiguration__ServiceDiscoveryProvider__Type=Consul" 
+    ports:
+      - "5000:10000"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - consul_service_discovery
+
+  discount.grpc:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10006
+      - "ConnectionString=Server=sqlserverdb,1433;Database=DiscountDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+    ports:
+      - "5006:10006"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - consul_service_discovery
+      - sqlserverdb
+
+  discount.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=10007
+      - "ConsulConfig__Host=http://consul_service_discovery"
+      - "ConsulConfig__Port=8500"
+      - "ConnectionString=Server=sqlserverdb,1433;Database=DiscountDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+    ports:
+      - "5007:10007"
+    depends_on:
+      - consul_service_discovery
+      - sqlserverdb
+
+
+

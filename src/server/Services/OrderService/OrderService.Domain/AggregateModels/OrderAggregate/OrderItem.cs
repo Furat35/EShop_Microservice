@@ -5,15 +5,15 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
 {
     public class OrderItem : BaseEntity, IValidatableObject
     {
-        public int ProductId { get; set; }
+        public int ProductId { get; private set; }
 
-        public string ProductName { get; set; }
+        public string ProductName { get; private set; }
 
-        public string PictureUrl { get; set; }
+        public string PictureUrl { get; private set; }
 
-        public decimal UnitPrice { get; set; }
+        public decimal UnitPrice { get; private set; }
 
-        public int Units { get; set; }
+        public int Units { get; private set; }
 
         protected OrderItem()
         {

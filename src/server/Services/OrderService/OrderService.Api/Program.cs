@@ -1,4 +1,5 @@
 using CommonLibrary.Extensions;
+using CommonLibrary.Middlewares;
 using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
@@ -21,7 +22,7 @@ builder.Services.AddHealthChecks();
 
 builder.Configuration
     .AddJsonFile("appsettings.json", false)
-    .AddJsonFile($"appsettings.{env}.json", false)
+    .AddJsonFile($"appsettings.{env}.json", true)
     .AddEnvironmentVariables()
     .Build();
 
@@ -42,15 +43,14 @@ builder.Services.AddSingleton<IEventBus>(sp =>
         EventBusType = EventBusType.RabbitMQ,
         Connection = new ConnectionFactory
         {
-            HostName = "localhost",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            HostName = builder.Configuration.GetValue<string>("RabbitMQSettings:Host"),
+            Port = builder.Configuration.GetValue<int>("RabbitMQSettings:Port"),
+            UserName = builder.Configuration.GetValue<string>("RabbitMQSettings:Username"),
+            Password = builder.Configuration.GetValue<string>("RabbitMQSettings:Password")
         }
     };
     return EventBusFactory.Create(config, sp);
 });
-
 
 var app = builder.Build();
 
@@ -60,17 +60,33 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MigrateDbContext<OrderDbContext>((context, services) =>
+app.UseCustomExceptionHandling();
+
+// dockerda sorun yaþanmamasý için þimdilik bu þekilde kullanýlacak
+using (var scope = app.Services.CreateScope())
 {
-    var logger = services.GetService<ILogger<OrderDbContext>>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    if (app.Environment.IsProduction() && !await dbContext.Database.CanConnectAsync())
+    {
+        app.MigrateDbContext<OrderDbContext>((context, services) =>
+        {
+            var env = services.GetService<IWebHostEnvironment>();
+            var logger = services.GetService<ILogger<OrderDbContextSeed>>();
+        });
+    }
+}
 
-    var dbContextSeeder = new OrderDbContextSeed();
-    dbContextSeeder.SeedAsync(context, logger)
-        .Wait();
-});
+//app.MigrateDbContext<OrderDbContext>((context, services) =>
+//{
+//    var logger = services.GetService<ILogger<OrderDbContext>>();
+
+//    var dbContextSeeder = new OrderDbContextSeed();
+//    dbContextSeeder.SeedAsync(context, logger)
+//        .Wait();
+//});
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
@@ -78,12 +94,12 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-app.RegisterWithConsul(lifetime, conf =>
+app.RegisterWithConsul(lifetime, builder.Configuration, conf =>
 {
     conf.ID = "OrderService-" + Guid.NewGuid();
     conf.Name = "OrderService";
     conf.Tags = new[] { "OrderService", "Order" };
-}, 5002);
+});
 
 
 IEventBus eventBus = app.Services.GetRequiredService<IEventBus>();

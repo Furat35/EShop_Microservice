@@ -1,9 +1,11 @@
+using CommonLibrary.Extensions;
 using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
 using PaymentService.Api.IntegrationEvents.EventHandlers;
 using PaymentService.Api.IntegrationEvents.Events;
 using RabbitMQ.Client;
+using CommonLibrary.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +24,16 @@ builder.Services.AddSingleton<IEventBus>(sp =>
         EventBusType = EventBusType.RabbitMQ,
         Connection = new ConnectionFactory
         {
-            HostName = "localhost",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            HostName = builder.Configuration.GetValue<string>("RabbitMQSettings:Host"),
+            Port = builder.Configuration.GetValue<int>("RabbitMQSettings:Port"),
+            UserName = builder.Configuration.GetValue<string>("RabbitMQSettings:Username"),
+            Password = builder.Configuration.GetValue<string>("RabbitMQSettings:Password")
         }
     };
     return EventBusFactory.Create(config, sp);
 });
-
+builder.Services.ConfigureConsul(builder.Configuration);
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -40,12 +43,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCustomExceptionHandling();
+app.MapHealthChecks("/health");
 
 app.UseAuthorization();
 
 app.MapControllers();
 
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+app.RegisterWithConsul(lifetime, builder.Configuration, conf =>
+{
+    conf.ID = "PaymentService-" + Guid.NewGuid();
+    conf.Name = "PaymentService";
+    conf.Tags = ["PaymentService", "Payment"];
+});
 IEventBus eventBus = app.Services.GetRequiredService<IEventBus>();
 eventBus.Subscribe<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
 

@@ -1,6 +1,6 @@
 ﻿using BasketService.Api.Core.Application.Services;
 using BasketService.Api.Core.Domain.Models;
-using BasketService.Api.Helpers;
+using CommonLibrary.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,25 +11,26 @@ namespace BasketService.Api.Controllers
         IServiceProvider services,
         IIdentityService identityService) : BaseController<IBasketService>(services)
     {
-        private readonly IIdentityService _identityService = identityService;
+        private readonly Guid _userId = identityService.GetUserId().Value;
 
-        [HttpGet]
+        [HttpGet("isup")]
         public IActionResult Get()
         {
             return Ok("Basket Service is Up and Running");
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBasketByIdAsync(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetBasket()
         {
-            var basket = await Service.GetBasketAsync(id);
-            basket.Data ??= new CustomerBasket(id);
+            var basket = await Service.GetBasketAsync();
+            basket.Data ??= new Basket(_userId);
             return CreateActionResult(basket);
         }
+        
 
         [HttpPost]
         [Route("update")]
-        public async Task<IActionResult> UpdateBasketAsync([FromBody] CustomerBasket basket)
+        public async Task<IActionResult> UpdateBasketAsync([FromBody] Basket basket)
         {
             return CreateActionResult(await Service.UpdateBasketAsync(basket));
         }
@@ -38,13 +39,12 @@ namespace BasketService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> AddItemToBasket([FromBody] BasketItem basketItem)
         {
-            var userId = _identityService.GetUserId();
-            var basket = await Service.GetBasketAsync(userId.Value);
-            basket.Data ??= new CustomerBasket(userId.Value);
+            var basket = await Service.GetBasketAsync();
+            basket.Data ??= new Basket(_userId);
             basket.Data.Items.Add(basketItem);
-            basket = await Service.UpdateBasketAsync(basket.Data);
+            var response = await Service.UpdateBasketAsync(basket.Data);
 
-            return CreateActionResult(basket);
+            return CreateActionResult(response);
         }
 
         [Route("checkout")]
@@ -54,10 +54,10 @@ namespace BasketService.Api.Controllers
             return CreateActionResult(await Service.CheckoutAsync(basketCheckout));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBasketByIdAsync(Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBasketByIdAsync()
         {
-            return CreateActionResult(await Service.DeleteBasketAsync(id));
+            return CreateActionResult(await Service.DeleteBasketAsync());
         }
     }
 }

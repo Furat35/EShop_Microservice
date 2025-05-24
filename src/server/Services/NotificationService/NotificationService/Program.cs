@@ -1,10 +1,13 @@
 ﻿using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NotificationService.IntegrationEvents.EventHandlers;
 using NotificationService.IntegrationEvents.Events;
+using NotificationService.Workers;
 using RabbitMQ.Client;
 
 namespace NotificationService
@@ -13,24 +16,44 @@ namespace NotificationService
     {
         static void Main(string[] args)
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
-            var sp = services.BuildServiceProvider();
-            IEventBus eventBus = sp.GetRequiredService<IEventBus>();
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.SetBasePath(Directory.GetCurrentDirectory());
+                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    config.AddEnvironmentVariables();
+                })
+                .ConfigureServices((context, services) =>
+                {
+                    ConfigureServices(services, context.Configuration);
+                    
+                })
+                .Build();
 
+            //var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+            //host.Services.RegisterWithConsul(lifetime, configuration, conf =>
+            //{
+            //    conf.ID = "PaymentService-" + Guid.NewGuid();
+            //    conf.Name = "PaymentService";
+            //    conf.Tags = ["PaymentService", "Payment"];
+            //});
+
+            IEventBus eventBus = host.Services.GetRequiredService<IEventBus>();
             eventBus.Subscribe<OrderPaymentSuccessIntegrationEvent, OrderPaymentSuccessIntegrationEventHandler>();
             eventBus.Subscribe<OrderPaymentFailedIntegrationEvent, OrderPaymentFailedIntegrationEventHandler>();
-
+            
             Console.WriteLine("App is running...");
-
-            Console.Read();
+            host.Run();
         }
 
-        private static void ConfigureServices(ServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddHostedService<Worker>();
             services.AddLogging(conf => conf.AddConsole());
             services.AddTransient<OrderPaymentSuccessIntegrationEventHandler>();
             services.AddTransient<OrderPaymentFailedIntegrationEventHandler>();
+
+            Console.WriteLine(configuration.GetValue<string>("RabbitMQSettings:Host"));
             services.AddSingleton<IEventBus>(sp =>
             {
                 var config = new EventBusConfig
@@ -41,10 +64,10 @@ namespace NotificationService
                     EventBusType = EventBusType.RabbitMQ,
                     Connection = new ConnectionFactory
                     {
-                        HostName = "localhost",
-                        Port = 5672,
-                        UserName = "guest",
-                        Password = "guest"
+                        HostName = configuration.GetValue<string>("RabbitMQSettings:Host"),
+                        Port = configuration.GetValue<int>("RabbitMQSettings:Port"),
+                        UserName = configuration.GetValue<string>("RabbitMQSettings:Username"),
+                        Password = configuration.GetValue<string>("RabbitMQSettings:Password")
                     }
                 };
                 return EventBusFactory.Create(config, sp);

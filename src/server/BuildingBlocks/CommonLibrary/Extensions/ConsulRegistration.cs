@@ -1,11 +1,11 @@
 ﻿using Consul;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 
 namespace CommonLibrary.Extensions
@@ -14,7 +14,7 @@ namespace CommonLibrary.Extensions
     {
         public static IServiceCollection ConfigureConsul(this IServiceCollection services, IConfiguration configuration, Action<ConsulClientConfiguration> consulClientConfiguration = null)
         {
-            var address = configuration["ConsulConfig:Address"];
+            var address = $"{configuration["ConsulConfig:Host"]}:{configuration["ConsulConfig:Port"]}";
             var consulClient = new ConsulClientConfiguration { Address = new Uri(address) };
             if (consulClientConfiguration is not null) consulClientConfiguration(consulClient);
             services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulClient));
@@ -22,23 +22,24 @@ namespace CommonLibrary.Extensions
             return services;
         }
 
-        public static IApplicationBuilder RegisterWithConsul(this IApplicationBuilder app, IHostApplicationLifetime lifetime, Action<AgentServiceRegistration> config, int defaultPort = 5000)
+        public static IApplicationBuilder RegisterWithConsul(this WebApplication app, IHostApplicationLifetime lifetime, IConfiguration configuration, Action<AgentServiceRegistration> config, int? port = null)
         {
-            var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
+            var consulClient = app.Services.GetRequiredService<IConsulClient>();
 
-            var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
+            var loggingFactory = app.Services.GetRequiredService<ILoggerFactory>();
 
             var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 
+            //["ASPNETCORE_URLS"] bakılacak
             // Get server IP
-            var features = app.Properties["server.Features"] as FeatureCollection;
-            var addresses = features.Get<IServerAddressesFeature>();
-            var address = addresses.Addresses.FirstOrDefault() ?? $"http://localhost:{defaultPort}";
-
+            port = port ?? int.Parse(configuration["ASPNETCORE_HTTP_PORTS"]!);
+            var ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList
+                    .FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            var address = app.Environment.IsProduction() ? $"http://{ip}:{port}" : $"http://localhost:{port}";
             // Register service with consul
             var uri = new Uri(address);
-
-            var currentAssembly = Assembly.GetExecutingAssembly().FullName.ToLower();
+            var currentAssembly = Assembly.GetEntryAssembly().GetName().Name.ToLower();
+            Console.WriteLine($"Registered {currentAssembly} to address: {address}");
             var registration = new AgentServiceRegistration()
             {
                 ID = $"{currentAssembly}-" + Guid.NewGuid(),
@@ -48,7 +49,7 @@ namespace CommonLibrary.Extensions
                 Tags = [currentAssembly],
                 Check = new AgentServiceCheck
                 {
-                    HTTP = $"{uri.Scheme}://host.docker.internal:{uri.Port}/health",
+                    HTTP = $"{uri.Scheme}://{uri.Host}:{uri.Port}/health",
                     Interval = TimeSpan.FromSeconds(10),
                     Timeout = TimeSpan.FromSeconds(5),
                     DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(20)

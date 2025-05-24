@@ -4,11 +4,11 @@ namespace BasketService.Api.Core.Domain.Models
 {
     public class BasketItem : IValidatableObject
     {
-        public string Id { get; set; }
-        public int ProductId { get; set; }
-        public string ProductName { get; set; }
+        public int Id { get; set; }
+        public int ItemId { get; set; }
+        public string ItemName { get; set; }
         public decimal UnitPrice { get; set; }
-        public decimal OldUnitPrice { get; set; }
+        public decimal DiscountAmount { get; set; }
         public int Quantity { get; set; }
         public string PictureUrl { get; set; }
 

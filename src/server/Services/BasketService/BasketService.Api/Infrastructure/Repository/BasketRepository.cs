@@ -17,13 +17,13 @@ namespace BasketService.Api.Infrastructure.Repository
             return await _database.KeyDeleteAsync(id.ToString().ToLower());
         }
 
-        public async Task<CustomerBasket?> GetBasketAsync(Guid id)
+        public async Task<Basket?> GetBasketAsync(Guid id)
         {
             var data = await _database.StringGetAsync(id.ToString().ToLower());
             if (data.IsNullOrEmpty)
                 return null;
 
-            return JsonConvert.DeserializeObject<CustomerBasket>(data);
+            return JsonConvert.DeserializeObject<Basket>(data);
         }
 
         public IEnumerable<string> GetUsers()
@@ -34,18 +34,18 @@ namespace BasketService.Api.Infrastructure.Repository
             return data?.Select(k => k.ToString());
         }
 
-        public async Task<CustomerBasket?> UpdateBasketAsync(CustomerBasket basket)
+        public async Task<bool> UpdateBasketAsync(Basket basket)
         {
             var created = await _database.StringSetAsync(basket.UserId.ToString().ToLower(), JsonConvert.SerializeObject(basket));
             if (!created)
             {
                 _logger.LogInformation("Problem occur persisting the item.");
-                return null;
+                return false;
             }
 
             _logger.LogInformation("Basket item persisted succesfully.");
 
-            return await GetBasketAsync(basket.UserId);
+            return created;
         }
 
         private IServer GetServer()
