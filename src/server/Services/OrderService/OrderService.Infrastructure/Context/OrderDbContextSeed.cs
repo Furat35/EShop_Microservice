@@ -21,28 +21,25 @@ namespace OrderService.Infrastructure.Context
                 var useCustomizationData = false;
                 var contentRootPath = "Seeding/Setup";
 
-                using (context)
+                await context.Database.MigrateAsync();
+
+                if (!await context.CardTypes.AnyAsync())
                 {
-                    context.Database.Migrate();
-
-                    if (!context.CardTypes.Any())
-                    {
-                        context.CardTypes.AddRange(useCustomizationData
-                                                ? GetCardTypesFromFile(contentRootPath, logger)
-                                                : GetPredefinedCardTypes());
-
-                        await context.SaveChangesAsync();
-                    }
-
-                    if (!context.OrderStatus.Any())
-                    {
-                        context.OrderStatus.AddRange(useCustomizationData
-                                                ? GetOrderStatusFromFile(contentRootPath, logger)
-                                                : GetPredefinedOrderStatus());
-                    }
+                    context.CardTypes.AddRange(useCustomizationData
+                                            ? GetCardTypesFromFile(contentRootPath, logger)
+                                            : GetPredefinedCardTypes());
 
                     await context.SaveChangesAsync();
                 }
+
+                if (!await context.OrderStatus.AnyAsync())
+                {
+                    context.OrderStatus.AddRange(useCustomizationData
+                                            ? GetOrderStatusFromFile(contentRootPath, logger)
+                                            : GetPredefinedOrderStatus());
+                }
+
+                await context.SaveChangesAsync();
             });
         }
 

@@ -34,8 +34,8 @@ namespace OrderService.Application.Features.Commands.CreateOrder
         {
             var dtoList = basketItems.Select(item => new OrderItemDTO()
             {
-                ProductId = item.ProductId,
-                ProductName = item.ProductName,
+                ItemId = item.ItemId,
+                ItemName = item.ItemName,
                 PictureUrl = item.PictureUrl,
                 UnitPrice = item.UnitPrice,
                 Units = item.Quantity
@@ -62,8 +62,8 @@ namespace OrderService.Application.Features.Commands.CreateOrder
 
     public class OrderItemDTO
     {
-        public int ProductId { get; init; }
-        public string ProductName { get; init; }
+        public int ItemId { get; init; }
+        public string ItemName { get; init; }
         public decimal UnitPrice { get; init; }
         public int Units { get; init; }
         public string PictureUrl { get; init; }

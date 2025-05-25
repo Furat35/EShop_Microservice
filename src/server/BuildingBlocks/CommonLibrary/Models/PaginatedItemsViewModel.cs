@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CommonLibrary.Models
+﻿namespace CommonLibrary.Models
 {
     public class PaginatedItemsViewModel<TEntity>
         (int pageIndex, int pageSize, long count, IEnumerable<TEntity> data) where TEntity : class

@@ -1,5 +1,3 @@
-using Discount.gRPC;
-using Discount.gRPC.Models;
 using Discount.gRPC.Repositories.Interfaces;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +11,9 @@ namespace Discount.gRPC.Services
             var discount = await discountRepository.GetAll().Include(d => d.Items).FirstOrDefaultAsync(d => d.Items.Any(_ => _.Id == request.ItemId));
             if (discount is null) throw new RpcException(new Status(StatusCode.NotFound, $"Discount not found for ItemId: {request.ItemId}"));
 
-            var discountReply = new DiscountReply 
-            { 
-                ItemId = request.ItemId,    
+            var discountReply = new DiscountReply
+            {
+                ItemId = request.ItemId,
                 DiscountId = discount.Id,
                 Amount = discount.Amount,
                 Percentage = discount.Percentage,
@@ -31,13 +29,14 @@ namespace Discount.gRPC.Services
             foreach (var itemId in request.ItemIds)
             {
                 discount = await discountRepository.GetAll().Include(d => d.Items).FirstOrDefaultAsync(d => d.Items.Any(_ => _.Id == itemId));
-                response.Discounts.Add(new DiscountReply()
-                {
-                    ItemId = itemId,
-                    DiscountId = discount.Id,
-                    Amount = discount.Amount,
-                    Percentage = discount.Percentage,
-                });
+                if (discount is not null)
+                    response.Discounts.Add(new DiscountReply()
+                    {
+                        ItemId = itemId,
+                        DiscountId = discount.Id,
+                        Amount = discount.Amount,
+                        Percentage = discount.Percentage,
+                    });
             }
 
             return response;

@@ -11,9 +11,6 @@ namespace IdentityService.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAppUserById(Guid id)
         {
-            object x = 3;
-            dynamic y = 3;
-            var t = (int)y;
             var user = await appUserService.GetUserByIdAsync(id);
             return Ok(user);
         }

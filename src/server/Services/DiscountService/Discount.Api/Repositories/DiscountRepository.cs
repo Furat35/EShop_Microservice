@@ -1,5 +1,4 @@
 ﻿using CommonLibrary.Repositories;
-using CommonLibrary.Repositories.Interfaces;
 using Discount.Api.Repositories.Context;
 using Discount.Api.Repositories.Interfaces;
 

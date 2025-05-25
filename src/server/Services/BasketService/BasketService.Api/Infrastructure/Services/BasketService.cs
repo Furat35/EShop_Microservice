@@ -10,9 +10,10 @@ using System.Net;
 
 namespace BasketService.Api.Infrastructure.Services
 {
+    // Öyle bir ürünün olup olmadığı kontrol edildikten sonra sepete ekleme işlemi de yapılabilir
     public class BasketService(IBasketRepository basketRepository, IEventBus eventBus,
         ILogger<BasketService> logger, IIdentityService identityService,
-        Discount.gRPC.DiscountService.DiscountServiceClient discountService) : IBasketService
+        DiscountService.DiscountServiceClient discountService) : IBasketService
     {
         private readonly IBasketRepository _basketRepository = basketRepository;
         private readonly IEventBus _eventBus = eventBus;
@@ -30,31 +31,8 @@ namespace BasketService.Api.Infrastructure.Services
         public async Task<ResponseDto<Basket?>> GetBasketAsync()
         {
             var basket = await _basketRepository.GetBasketAsync(_userId);
-            if(basket?.Items.Count > 0)
-            {
-                var request = new ItemDiscountsRequestModel();
-                request.ItemIds.AddRange(basket.Items.Select(_ => _.ItemId));
-                var discounts = await discountService.GetDiscountsByItemIdsAsync(request);
-                if (discounts is not null)
-                {
-                    BasketItem basketItem = null;
-                    foreach (var discount in discounts.Discounts)
-                    {
-                        basketItem = basket.Items.First(_ => _.ItemId == discount.ItemId);
-                        basketItem.DiscountAmount = (decimal)discount.Amount > (decimal)discount.Percentage * basketItem.UnitPrice
-                            ? (decimal)discount.Amount
-                            : (decimal)discount.Percentage * basketItem.UnitPrice / 100;
-                    }
-                }
-            }
-            
+            await ApplyDiscount(basket);
             return ResponseDto<Basket?>.Success(basket, HttpStatusCode.OK);
-        }
-
-        public async Task RefreshBasket()
-        {
-            var basket = await _basketRepository.GetBasketAsync(_userId);
-           
         }
 
         public async Task<ResponseDto<bool>> UpdateBasketAsync(Basket basket)
@@ -69,7 +47,6 @@ namespace BasketService.Api.Infrastructure.Services
         public async Task<ResponseDto<bool>> CheckoutAsync([FromBody] BasketCheckout basketCheckout)
         {
             basketCheckout.UserId = _userId;
-            //var username = _identityService.GetUsername().ToString();
             var basket = await _basketRepository.GetBasketAsync(_userId);
 
             if (basket == null)
@@ -90,6 +67,27 @@ namespace BasketService.Api.Infrastructure.Services
             }
 
             return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
+        }
+
+        private async Task ApplyDiscount(Basket basket)
+        {
+            if (basket?.Items.Count > 0)
+            {
+                var request = new ItemDiscountsRequestModel();
+                request.ItemIds.AddRange(basket.Items.Select(_ => _.ItemId));
+                var discounts = await discountService.GetDiscountsByItemIdsAsync(request);
+                if (discounts is not null)
+                {
+                    BasketItem basketItem = null;
+                    foreach (var discount in discounts.Discounts)
+                    {
+                        basketItem = basket.Items.First(_ => _.ItemId == discount.ItemId);
+                        basketItem.DiscountAmount = (decimal)discount.Amount > (decimal)discount.Percentage * basketItem.UnitPrice
+                            ? (decimal)discount.Amount
+                            : (decimal)discount.Percentage * basketItem.UnitPrice / 100;
+                    }
+                }
+            }
         }
     }
 }

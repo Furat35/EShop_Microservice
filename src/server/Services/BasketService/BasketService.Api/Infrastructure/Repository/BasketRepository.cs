@@ -1,12 +1,11 @@
 ﻿using BasketService.Api.Core.Application.Repository;
-using BasketService.Api.Core.Application.Services;
 using BasketService.Api.Core.Domain.Models;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace BasketService.Api.Infrastructure.Repository
 {
-    public class BasketRepository(ILoggerFactory loggerFactory, ConnectionMultiplexer redis, IIdentityService identityService) : IBasketRepository
+    public class BasketRepository(ILoggerFactory loggerFactory, ConnectionMultiplexer redis) : IBasketRepository
     {
         private readonly ILogger<BasketRepository> _logger = loggerFactory.CreateLogger<BasketRepository>();
         private readonly ConnectionMultiplexer _redis = redis;

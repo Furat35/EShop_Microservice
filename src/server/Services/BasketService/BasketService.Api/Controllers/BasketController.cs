@@ -26,7 +26,7 @@ namespace BasketService.Api.Controllers
             basket.Data ??= new Basket(_userId);
             return CreateActionResult(basket);
         }
-        
+
 
         [HttpPost]
         [Route("update")]

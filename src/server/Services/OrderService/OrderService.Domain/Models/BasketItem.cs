@@ -4,9 +4,9 @@
     {
         public string Id { get; init; }
 
-        public int ProductId { get; init; }
+        public int ItemId { get; init; }
 
-        public string ProductName { get; init; }
+        public string ItemName { get; init; }
 
         public decimal UnitPrice { get; init; }
 

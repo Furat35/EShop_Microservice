@@ -9,7 +9,6 @@ namespace BasketService.Api.IntegrationEvents.Events
         Basket basket, string description) : IntegrationEvent
     {
         public Guid UserId { get; set; } = userId;
-        //public string UserName { get; set; } = userName;
         public int OrderNumber { get; set; }
         public string City { get; set; } = city;
         public string Street { get; set; } = street;

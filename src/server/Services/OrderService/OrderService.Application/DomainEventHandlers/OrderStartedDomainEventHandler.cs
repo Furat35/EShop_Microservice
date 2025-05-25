@@ -39,8 +39,6 @@ namespace OrderService.Application.DomainEventHandlers
                 buyerRepository.Update(buyer) :
                 await buyerRepository.AddAsync(buyer);
 
-            await buyerRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
-
             // order status changed event may be fired here
         }
     }

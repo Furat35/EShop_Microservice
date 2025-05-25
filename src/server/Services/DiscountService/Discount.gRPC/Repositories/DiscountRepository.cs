@@ -1,5 +1,4 @@
 ﻿using CommonLibrary.Repositories;
-using CommonLibrary.Repositories.Interfaces;
 using Discount.gRPC.Repositories.Context;
 using Discount.gRPC.Repositories.Interfaces;
 

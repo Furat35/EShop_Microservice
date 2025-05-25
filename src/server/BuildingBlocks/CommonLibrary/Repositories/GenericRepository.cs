@@ -1,18 +1,11 @@
 ﻿using CommonLibrary.Models;
 using CommonLibrary.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CommonLibrary.Repositories
 {
-    public class GenericRepository<TContext, TEntity, TKey>(TContext dbContext) : IGenericRepository<TEntity, TKey> 
+    public class GenericRepository<TContext, TEntity, TKey>(TContext dbContext) : IGenericRepository<TEntity, TKey>
         where TContext : DbContext
         where TEntity : class, IEntity<TKey>
     {

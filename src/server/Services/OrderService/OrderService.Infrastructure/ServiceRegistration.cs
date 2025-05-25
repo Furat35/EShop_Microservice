@@ -20,12 +20,6 @@ namespace OrderService.Infrastructure
             services.AddScoped<IBuyerRepository, BuyerRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
 
-            //var optionsBuilder = new DbContextOptionsBuilder<OrderDbContext>()
-            //    .UseSqlServer(configuration["OrderDbConnectionString"]);
-
-            //using var dbContext = new OrderDbContext(optionsBuilder.Options, null);
-            //dbContext.Database.Migrate();
-
             return services;
         }
     }

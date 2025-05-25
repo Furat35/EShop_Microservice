@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Discount.gRPC.Migrations
 {
     [DbContext(typeof(DiscountDbContext))]
-    [Migration("20250523141937_init")]
+    [Migration("20250525113123_init")]
     partial class init
     {
         /// <inheritdoc />

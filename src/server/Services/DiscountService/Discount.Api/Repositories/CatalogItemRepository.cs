@@ -1,7 +1,6 @@
 ﻿using CommonLibrary.Repositories;
 using Discount.Api.Repositories.Context;
 using Discount.Api.Repositories.Interfaces;
-using System;
 
 namespace Discount.Api.Repositories
 {

@@ -16,8 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
 builder.Configuration
@@ -54,39 +52,17 @@ builder.Services.AddSingleton<IEventBus>(sp =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseCustomExceptionHandling();
 
-// dockerda sorun yaþanmamasý için þimdilik bu þekilde kullanýlacak
-using (var scope = app.Services.CreateScope())
+app.MigrateDbContext<OrderDbContext>((context, services) =>
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-    if (app.Environment.IsProduction() && !await dbContext.Database.CanConnectAsync())
-    {
-        app.MigrateDbContext<OrderDbContext>((context, services) =>
-        {
-            var env = services.GetService<IWebHostEnvironment>();
-            var logger = services.GetService<ILogger<OrderDbContextSeed>>();
-        });
-    }
-}
+    var logger = services.GetService<ILogger<OrderDbContext>>();
 
-//app.MigrateDbContext<OrderDbContext>((context, services) =>
-//{
-//    var logger = services.GetService<ILogger<OrderDbContext>>();
+    var dbContextSeeder = new OrderDbContextSeed();
+    dbContextSeeder.SeedAsync(context, logger)
+        .Wait();
+});
 
-//    var dbContextSeeder = new OrderDbContextSeed();
-//    dbContextSeeder.SeedAsync(context, logger)
-//        .Wait();
-//});
-
-
-//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

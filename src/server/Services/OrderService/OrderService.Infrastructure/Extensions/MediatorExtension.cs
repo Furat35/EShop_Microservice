@@ -10,17 +10,25 @@ namespace OrderService.Infrastructure.Extensions
         {
             var domainEntities = ctx.ChangeTracker
                                     .Entries<BaseEntity>()
-                                    .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any());
+                                    .Where(x => x.Entity.DomainEvents?.Any() == true)
+                                    .ToList();
 
             var domainEvents = domainEntities
                 .SelectMany(x => x.Entity.DomainEvents)
                 .ToList();
 
-            domainEntities.ToList()
+            domainEntities
                 .ForEach(entity => entity.Entity.ClearDomainEvents());
 
             foreach (var domainEvent in domainEvents)
                 await mediator.Publish(domainEvent);
+
+            if (ctx.ChangeTracker
+                .Entries<BaseEntity>()
+                .Any(x => x.Entity.DomainEvents?.Any() == true))
+            {
+                await DispatchDomainEventsAsync(mediator, ctx);
+            }
         }
     }
 }

@@ -46,4 +46,5 @@ namespace OrderService.Infrastructure.EntityConfigurations
                 .HasForeignKey("orderStatusId");
         }
     }
+
 }

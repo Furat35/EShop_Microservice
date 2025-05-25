@@ -1,11 +1,11 @@
+using CommonLibrary.Extensions;
+using CommonLibrary.Middlewares;
 using Discount.gRPC.Repositories;
 using Discount.gRPC.Repositories.Context;
 using Discount.gRPC.Repositories.Interfaces;
 using Discount.gRPC.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using CommonLibrary.Middlewares;
-using CommonLibrary.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,13 +29,6 @@ var app = builder.Build();
 
 app.MapHealthChecks("/health");
 app.UseCustomExceptionHandling();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<DiscountDbContext>();
-    //if (!await dbContext.Database.CanConnectAsync())
-    //    dbContext.Database.Migrate();
-}
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 app.RegisterWithConsul(lifetime, builder.Configuration, conf =>

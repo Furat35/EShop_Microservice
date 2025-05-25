@@ -1,5 +1,4 @@
 ﻿using CommonLibrary.Repositories.Interfaces;
-using System;
 
 namespace Discount.gRPC.Repositories.Interfaces
 {

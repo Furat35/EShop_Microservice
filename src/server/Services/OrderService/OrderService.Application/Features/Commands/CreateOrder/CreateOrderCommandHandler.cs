@@ -20,7 +20,7 @@ namespace OrderService.Application.Features.Commands.CreateOrder
 
             foreach (var orderItem in request.OrderItems)
             {
-                dbOrder.AddOrderItem(orderItem.ProductId, orderItem.ProductName, orderItem.UnitPrice, orderItem.PictureUrl, orderItem.Units);
+                dbOrder.AddOrderItem(orderItem.ItemId, orderItem.ItemName, orderItem.UnitPrice, orderItem.PictureUrl, orderItem.Units);
             }
             dbOrder.CalculateQuantity();
             await _orderRepository.AddAsync(dbOrder);

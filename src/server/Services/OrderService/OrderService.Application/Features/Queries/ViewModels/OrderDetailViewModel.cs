@@ -18,7 +18,7 @@
     public class OrderItemViewModel
     {
         public Guid Id { get; set; }
-        public string ProductName { get; init; }
+        public string ItemName { get; init; }
         public int Units { get; init; }
         public double UnitPrice { get; init; }
         public string PictureUrl { get; init; }

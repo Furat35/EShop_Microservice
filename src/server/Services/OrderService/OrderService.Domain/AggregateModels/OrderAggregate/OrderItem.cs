@@ -5,9 +5,9 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
 {
     public class OrderItem : BaseEntity, IValidatableObject
     {
-        public int ProductId { get; private set; }
+        public int ItemId { get; private set; }
 
-        public string ProductName { get; private set; }
+        public string ItemName { get; private set; }
 
         public string PictureUrl { get; private set; }
 
@@ -20,11 +20,11 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
 
         }
 
-        public OrderItem(int productId, string productName, decimal unitPrice, string pictureUrl, int units = 1)
+        public OrderItem(int itemId, string itemName, decimal unitPrice, string pictureUrl, int units = 1)
         {
-            ProductId = productId;
+            ItemId = itemId;
 
-            ProductName = productName;
+            ItemName = itemName;
             UnitPrice = unitPrice;
             Units = units;
             PictureUrl = pictureUrl;

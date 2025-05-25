@@ -26,7 +26,7 @@ namespace NotificationService
                 .ConfigureServices((context, services) =>
                 {
                     ConfigureServices(services, context.Configuration);
-                    
+
                 })
                 .Build();
 
@@ -41,7 +41,7 @@ namespace NotificationService
             IEventBus eventBus = host.Services.GetRequiredService<IEventBus>();
             eventBus.Subscribe<OrderPaymentSuccessIntegrationEvent, OrderPaymentSuccessIntegrationEventHandler>();
             eventBus.Subscribe<OrderPaymentFailedIntegrationEvent, OrderPaymentFailedIntegrationEventHandler>();
-            
+
             Console.WriteLine("App is running...");
             host.Run();
         }
@@ -53,7 +53,6 @@ namespace NotificationService
             services.AddTransient<OrderPaymentSuccessIntegrationEventHandler>();
             services.AddTransient<OrderPaymentFailedIntegrationEventHandler>();
 
-            Console.WriteLine(configuration.GetValue<string>("RabbitMQSettings:Host"));
             services.AddSingleton<IEventBus>(sp =>
             {
                 var config = new EventBusConfig

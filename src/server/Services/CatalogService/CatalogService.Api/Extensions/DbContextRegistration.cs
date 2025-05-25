@@ -18,12 +18,6 @@ namespace CatalogService.Api.Extensions
                         });
                });
 
-            //var optionsBuilder = new DbContextOptionsBuilder<CatalogContext>()
-            //              .UseSqlServer(configuration["ConnectionString"]);
-
-            //using var dbContext = new CatalogContext(optionsBuilder.Options);
-            //dbContext.Database.Migrate();
-
             return services;
         }
     }
