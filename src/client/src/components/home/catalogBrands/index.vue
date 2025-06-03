@@ -220,13 +220,13 @@ export default {
         },
         getCatalogBrandById(catalogBrandId: number) {
             return this.$axios.get(`catalogs/brands/${catalogBrandId}`)
-                .then(res => res.data)
+                .then(res => res.data.data)
                 .catch(err => console.log(`${err.status} : ${err}`));
         },
         getCatalogBrands() {
             return this.$axios.get(`catalogs/brands`)
                 .then(res => {
-                    Object.assign(this.catalogBrands, res.data);
+                    Object.assign(this.catalogBrands, res.data.data);
                     this.pageIndex = this.catalogBrands.pageIndex;
                 })
                 .catch(res => console.log(`${res.status} : ${res}`));
@@ -259,6 +259,7 @@ export default {
                         icon: "success",
                         title: "Ürün başarıyla eklendi"
                     });
+                    Object.assign(this.catalogBrandCreateDto, new CatalogBrandCreateDto());
                 })
                 .catch(err =>
                     Swal.fire({

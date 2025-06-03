@@ -14,7 +14,7 @@ namespace OrderService.Application.Features.Queries.GetAllOrderDetails
             var orders = orderRepository.GetAll();
             var totalItems = await orders.CountAsync(cancellationToken);
             var itemsOnPage = await orders
-                .OrderBy(o => o.CreateDate)
+                .OrderByDescending(o => o.CreateDate)
                 .Skip(request.PageSize * request.PageIndex)
                 .Take(request.PageSize)
                 .Include(o => o.OrderItems)

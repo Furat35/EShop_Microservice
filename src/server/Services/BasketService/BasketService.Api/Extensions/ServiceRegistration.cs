@@ -1,7 +1,7 @@
 ﻿using BasketService.Api.Core.Application.Repository;
 using BasketService.Api.Core.Application.Services;
+using BasketService.Api.helpers;
 using BasketService.Api.Infrastructure.Repository;
-using BasketService.Api.Infrastructure.Services;
 using BasketService.Api.IntegrationEvents.EventHandlers;
 using BasketService.Api.IntegrationEvents.Events;
 using CommonLibrary.Extensions;
@@ -17,7 +17,7 @@ namespace BasketService.Api.Extensions
 {
     public static class ServiceRegistration
     {
-        public static IServiceCollection AddCatalogServices(this WebApplicationBuilder builder, IConfiguration configuration)
+        public static IServiceCollection AddBasketServices(this WebApplicationBuilder builder, IConfiguration configuration)
         {
             builder.Services.AddControllers();
             builder.Services.ConfigureAuth(builder.Configuration);
@@ -46,9 +46,12 @@ namespace BasketService.Api.Extensions
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IBasketService, services.BasketService>();
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();
-            builder.Services.AddScoped<IIdentityService, IdentityService>();
             builder.Services.AddTransient<OrderCreatedIntegrationEventHandler>();
-            builder.Services.AddGrpcClient<Discount.gRPC.DiscountService.DiscountServiceClient>(config => { config.Address = new Uri(builder.Configuration["GrpcSettings:Url"]!); });
+            builder.Services.AddScoped<GrpcAuthInterceptor>();
+            builder.Services.AddGrpcClient<Discount.gRPC.DiscountService.DiscountServiceClient>(config =>
+            {
+                config.Address = new Uri(builder.Configuration["GrpcSettings:Url"]!);
+            }).AddInterceptor<GrpcAuthInterceptor>();
 
 
             return builder.Services;

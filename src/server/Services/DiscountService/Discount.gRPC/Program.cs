@@ -24,11 +24,15 @@ builder.Services.AddScoped<ICatalogItemRepository, CatalogItemRepository>();
 builder.Services.AddGrpc();
 builder.Services.AddHealthChecks();
 builder.Services.ConfigureConsul(builder.Configuration);
+builder.Services.ConfigureAuth(builder.Configuration);
 
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
 app.UseCustomExceptionHandling();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 app.RegisterWithConsul(lifetime, builder.Configuration, conf =>

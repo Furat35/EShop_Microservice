@@ -13,6 +13,7 @@ namespace CatalogService.Api.Extensions
         public static IServiceCollection AddCatalogServices(this WebApplicationBuilder builder, IConfiguration configuration)
         {
             builder.Services.ConfigureDbContext(configuration);
+            builder.Services.ConfigureAuth(builder.Configuration);
             builder.Services.AddControllers();
             builder.Host.UseContentRoot(Directory.GetCurrentDirectory());
             builder.Services.Configure<CatalogSettings>(configuration.GetSection("CatalogSettings"));
@@ -41,6 +42,7 @@ namespace CatalogService.Api.Extensions
 
             app.UseStaticFiles();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapHealthChecks("/health");

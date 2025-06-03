@@ -3,8 +3,7 @@
     public class OrderDetailViewModel
     {
         public Guid Id { get; set; }
-        public string OrderNumber { get; init; }
-        public DateTime Date { get; init; }
+        public DateTime CreateDate { get; init; }
         public string Status { get; init; }
         public string Description { get; init; }
         public string Street { get; init; }

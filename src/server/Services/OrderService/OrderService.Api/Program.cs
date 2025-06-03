@@ -65,6 +65,7 @@ app.MigrateDbContext<OrderDbContext>((context, services) =>
 
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 app.MapHealthChecks("/health");

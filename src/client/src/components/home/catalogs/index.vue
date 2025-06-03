@@ -16,7 +16,7 @@
                                         <option value="100">100</option>
                                     </select></label>
                                 <button type="button" class="btn btn-primary ml-2" data-dismiss="modal"
-                                    data-toggle="modal" data-target="#catalogCreateModal">
+                                    data-toggle="modal" data-target="#createCatalogModal">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-person-add" viewBox="0 0 16 16">
                                         <path
@@ -78,9 +78,9 @@
                                         <td>{{ catalog.catalogType.type }}</td>
                                         <td>{{ catalog.catalogBrand.brand }}</td>
                                         <td>
-                                            <button type="button" data-toggle="modal" data-target="#catalogUpdateModal"
+                                            <button type="button" data-toggle="modal" data-target="#updateCatalogModal"
                                                 class="btn btn-outline-success" style="margin-right: 10px;"
-                                                @click="showCatalogUpdateModal(catalog.id)">
+                                                @click="showupdateCatalogModal(catalog.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                                                     fill="currentColor" class="bi bi-building-dash" viewBox="0 0 13 13">
                                                     <path
@@ -92,7 +92,7 @@
                                                 </svg>
                                             </button>
                                             <button type="button" class="btn btn-outline-danger"
-                                                @click="catalogDelete(catalog.name, catalog.id)">
+                                                @click="deleteCatalog(catalog.name, catalog.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
                                                     fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 13 13">
                                                     <path
@@ -151,11 +151,11 @@
     </div>
 
     <!-- Update Modal -->
-    <div class="modal fade" id="catalogUpdateModal" tabindex="-1" aria-labelledby="catalogUpdateModal">
+    <div class="modal fade" id="updateCatalogModal" tabindex="-1" aria-labelledby="updateCatalogModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="catalogUpdateModal">Güncelle</h5>
+                    <h5 class="modal-title" id="updateCatalogModal">Güncelle</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
@@ -208,18 +208,18 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" @click="catalogUpdate">Kaydet</button>
+                    <button type="button" class="btn btn-success" @click="updateCatalog">Kaydet</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Create Modal -->
-    <div class="modal fade" id="catalogCreateModal" tabindex="-1" aria-labelledby="catalogCreateModal">
+    <div class="modal fade" id="createCatalogModal" tabindex="-1" aria-labelledby="createCatalogModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="catalogCreateModal">Ekle</h5>
+                    <h5 class="modal-title" id="createCatalogModal">Ekle</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
@@ -228,34 +228,34 @@
                     <form @submit.prevent>
                         <div class="form-group">
                             <label for="id" class="col-form-label" hidden>Id</label>
-                            <input type="text" class="form-control" id="id" hidden v-model="catalogCreateItem.id">
+                            <input type="text" class="form-control" id="id" hidden v-model="createCatalogItem.id">
                         </div>
 
                         <div class="form-group">
                             <label for="name" class="col-form-label">Ürün Adı</label>
-                            <input type="text" class="form-control" id="name" v-model="catalogCreateItem.name">
+                            <input type="text" class="form-control" id="name" v-model="createCatalogItem.name">
                         </div>
                         <div class="form-row">
                             <div class="form-group col">
                                 <label for="price" class="col-form-label">Fiyat</label>
-                                <input type="text" class="form-control" id="price" v-model="catalogCreateItem.price">
+                                <input type="text" class="form-control" id="price" v-model="createCatalogItem.price">
                             </div>
                             <div class="form-group col">
                                 <label for="available-stock" class="col-form-label">Stock</label>
                                 <input type="text" class="form-control" id="available-stock"
-                                    v-model="catalogCreateItem.availableStock">
+                                    v-model="createCatalogItem.availableStock">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="description" class="col-form-label">Açıklama</label>
                             <textarea class="form-control" id="description"
-                                v-model="catalogCreateItem.description"></textarea>
+                                v-model="createCatalogItem.description"></textarea>
                         </div>
                         <div class="form-row">
                             <div class="form-group col">
                                 <label for="category-type">Kategori</label>
                                 <select class="form-control" id="category-type"
-                                    v-model="catalogCreateItem.catalogTypeId">
+                                    v-model="createCatalogItem.catalogTypeId">
                                     <option v-for="catalogType in catalogTypes" :value="catalogType.id">{{
                                         catalogType.type }}</option>
                                 </select>
@@ -263,7 +263,7 @@
                             <div class="form-group col">
                                 <label for="category-brand">Marka</label>
                                 <select class="form-control" id="category-brand"
-                                    v-model="catalogCreateItem.catalogBrandId">
+                                    v-model="createCatalogItem.catalogBrandId">
                                     <option v-for="catalogBrand in catalogBrands" :value="catalogBrand.id">{{
                                         catalogBrand.brand }}</option>
                                 </select>
@@ -272,7 +272,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" @click="catalogCreate">Kaydet</button>
+                    <button class="btn btn-success" @click="createCatalog">Kaydet</button>
                 </div>
             </div>
         </div>
@@ -296,7 +296,7 @@ export default {
             pageSize: 10,
             pageIndex: 0,
             catalogItemUpdate: new CatalogItemUpdateDto(),
-            catalogCreateItem: new CatalogItemCreateDto(),
+            createCatalogItem: new CatalogItemCreateDto(),
             catalogTypes: [] as CatalogTypeListDto[],
             catalogBrands: [] as CatalogBrandListDto[]
         }
@@ -310,7 +310,8 @@ export default {
         async getCatalogs() {
             await this.$axios.get(`catalogs?pageIndex=${this.pageIndex}&&pageSize=${this.pageSize}`)
                 .then(res => {
-                    Object.assign(this.catalogs, res.data);
+                    var x = res.data.data;
+                    Object.assign(this.catalogs, res.data.data);
                     this.pageIndex = this.catalogs.pageIndex;
                 })
                 .catch(err => console.log(`${err.status} : ${err}`));
@@ -324,23 +325,23 @@ export default {
         },
         getCatalogById(catalogId: number) {
             return this.$axios.get(`catalogs/${catalogId}`)
-                .then(res => res.data)
+                .then(res => res.data.data)
                 .catch(err => console.log(`${err.status} : ${err}`));
         },
         getCatalogTypes() {
             return this.$axios.get(`catalogs/types`)
-                .then(res => Object.assign(this.catalogTypes, res.data.data))
+                .then(res => Object.assign(this.catalogTypes, res.data.data.data))
                 .catch(res => console.log(`${res.status} : ${res}`));
         },
         getCatalogBrands() {
             return this.$axios.get(`catalogs/brands`)
-                .then(res => Object.assign(this.catalogBrands, res.data.data))
+                .then(res => Object.assign(this.catalogBrands, res.data.data.data))
                 .catch(err => console.log(`${err.status} : ${err}`));
         },
-        async showCatalogUpdateModal(catalogId: number) {
+        async showupdateCatalogModal(catalogId: number) {
             Object.assign(this.catalogItemUpdate, await this.getCatalogById(catalogId));
         },
-        catalogUpdate() {
+        updateCatalog() {
             this.$axios.put(`catalogs`, this.catalogItemUpdate)
                 .then(res => {
                     this.getCatalogs();
@@ -357,15 +358,15 @@ export default {
                         footer: '<a href="#">Why do I have this issue?</a>'
                     }));
         },
-        catalogCreate() {
-            console.log(this.catalogCreateItem)
-            this.$axios.post(`catalogs`, this.catalogCreateItem)
+        createCatalog() {
+            this.$axios.post(`catalogs`, this.createCatalogItem)
                 .then(res => {
                     this.getCatalogs();
                     Toast.fire({
                         icon: "success",
                         title: "Ürün başarıyla eklendi"
                     });
+                    Object.assign(this.createCatalogItem, new CatalogItemCreateDto());
                 })
                 .catch(err =>
                     Swal.fire({
@@ -375,7 +376,7 @@ export default {
                         footer: '<a href="#">Why do I have this issue?</a>'
                     }));
         },
-        catalogDelete(catalogName: string, catalogId: number) {
+        deleteCatalog(catalogName: string, catalogId: number) {
             Swal.fire({
                 title: `${catalogName} Silmek istediğine emin misin?`,
                 showCancelButton: true,

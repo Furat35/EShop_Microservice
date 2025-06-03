@@ -13,8 +13,6 @@ namespace IdentityService.Api.Extensions
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
             services.AddScoped<IIdentityService, Application.Services.IdentityService>();
             services.AddScoped<IAppUserService, AppUserService>();
 
@@ -45,10 +43,6 @@ namespace IdentityService.Api.Extensions
             }
 
             app.UseCustomExceptionHandling();
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
 
             app.MapHealthChecks("/health");
             app.MapControllers();

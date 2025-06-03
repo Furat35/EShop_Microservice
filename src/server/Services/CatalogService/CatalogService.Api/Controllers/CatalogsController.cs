@@ -1,14 +1,17 @@
 ﻿using CatalogService.Api.Core.Application.Services;
 using CatalogService.Api.Core.Domain;
 using CommonLibrary.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogService.Api.Controllers
 {
+    [Authorize]
     public class CatalogsController(IServiceProvider services, ICatalogItemService catalogService,
         ICatalogTypeService catalogTypeService, ICatalogBrandService catalogBrandService) : BaseController<ICatalogItemService>(services)
     {
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Items([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
         {
             var response = await catalogService.GetItemsAsync(pageIndex, pageSize, ids);
@@ -16,6 +19,7 @@ namespace CatalogService.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ItemById(int id)
         {
             var response = await catalogService.GetItemByIdAsync(id);
@@ -23,6 +27,7 @@ namespace CatalogService.Api.Controllers
         }
 
         [HttpGet("name/{name:minlength(1)}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ItemsWithName(string name, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
         {
             var response = await catalogService.ItemsWithNameAsync(name, pageSize, pageIndex);
@@ -30,6 +35,7 @@ namespace CatalogService.Api.Controllers
         }
 
         [HttpGet("type/{catalogTypeId:int?}/brand/{catalogBrandId:int?}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ItemsByTypeIdAndBrandId(int? catalogTypeId, int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
         {
             var response = await catalogService.ItemsByTypeIdAndBrandIdAsync(catalogTypeId, catalogBrandId, pageSize, pageIndex);
@@ -59,13 +65,15 @@ namespace CatalogService.Api.Controllers
 
         #region CatalogTypes
         [HttpGet("types")]
+        [AllowAnonymous]
         public async Task<IActionResult> CatalogTypes([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
         {
             var response = await catalogTypeService.CatalogTypesAsync(pageIndex, pageSize, ids);
             return CreateActionResult(response);
         }
 
-        [HttpGet("types/{type:minlength(1)}")]
+        [HttpGet("types/bytype/{type:minlength(1)}")]
+        [AllowAnonymous]
         public async Task<IActionResult> CatalogTypes(string type, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
         {
             var response = await catalogTypeService.CatalogTypesAsync(type, pageIndex, pageSize);
@@ -103,13 +111,15 @@ namespace CatalogService.Api.Controllers
 
         #region Catalog Brands
         [HttpGet("brands")]
+        [AllowAnonymous]
         public async Task<IActionResult> CatalogBrands([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
         {
             var response = await catalogBrandService.CatalogBrandsAsync(pageIndex, pageSize, ids);
             return CreateActionResult(response);
         }
 
-        [HttpGet("brands/{brand:minlength(1)}")]
+        [HttpGet("brands/bybrand/{brand:minlength(1)}")]
+        [AllowAnonymous]
         public async Task<IActionResult> CatalogBrands(string brand, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
         {
             var response = await catalogBrandService.CatalogBrandsAsync(brand, pageIndex, pageSize);
@@ -118,6 +128,7 @@ namespace CatalogService.Api.Controllers
 
 
         [HttpGet("brands/{catalogBrandId:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> CatalogBrands(int catalogBrandId)
         {
             var response = await catalogBrandService.GetCatalogBrandByIdAsync(catalogBrandId);

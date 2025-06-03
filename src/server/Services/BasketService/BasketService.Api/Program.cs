@@ -2,7 +2,7 @@ using BasketService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCatalogServices(builder.Configuration);
+builder.AddBasketServices(builder.Configuration);
 
 var app = builder.Build();
 

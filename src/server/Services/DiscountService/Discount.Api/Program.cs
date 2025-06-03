@@ -22,6 +22,7 @@ builder.Services.AddDbContext<DiscountDbContext>(options =>
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<ICatalogItemRepository, CatalogItemRepository>();
 
+builder.Services.ConfigureAuth(builder.Configuration);
 builder.Services.ConfigureConsul(builder.Configuration);
 builder.Services.AddHealthChecks();
 
@@ -34,6 +35,10 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 app.UseCustomExceptionHandling();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapHealthChecks("/health");
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();

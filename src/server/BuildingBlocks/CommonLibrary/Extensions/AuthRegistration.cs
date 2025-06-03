@@ -11,7 +11,7 @@ namespace CommonLibrary.Extensions
         public static IServiceCollection ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["AuthConfig:Secret"]));
-
+            services.AddAuthorization();
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

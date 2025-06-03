@@ -220,13 +220,13 @@ export default {
         },
         getCatalogTypeById(catalogTypeId: number) {
             return this.$axios.get(`catalogs/types/${catalogTypeId}`)
-                .then(res => res.data)
+                .then(res => res.data.data)
                 .catch(err => console.log(`${err.status} : ${err}`));
         },
         getCatalogTypes() {
             return this.$axios.get(`catalogs/types`)
                 .then(res => {
-                    Object.assign(this.catalogTypes, res.data);
+                    Object.assign(this.catalogTypes, res.data.data);
                     this.pageIndex = this.catalogTypes.pageIndex;
                 })
                 .catch(res => console.log(`${res.status} : ${res}`));
@@ -259,6 +259,7 @@ export default {
                         icon: "success",
                         title: "Ürün başarıyla eklendi"
                     });
+                    Object.assign(this.catalogTypeCreateDto, new CatalogTypeCreateDto);
                 })
                 .catch(err =>
                     Swal.fire({

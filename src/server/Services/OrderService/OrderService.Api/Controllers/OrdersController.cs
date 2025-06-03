@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Api.Helpers;
 using OrderService.Application.Features.Queries.GetAllOrderDetails;
@@ -6,6 +7,7 @@ using OrderService.Application.Features.Queries.GetOrderDetailById;
 
 namespace OrderService.Api.Controllers
 {
+    [Authorize]
     public class OrdersController(IMediator mediator) : BaseController(mediator)
     {
         [HttpGet("{id}")]

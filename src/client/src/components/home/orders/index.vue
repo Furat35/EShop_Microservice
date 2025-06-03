@@ -63,7 +63,8 @@
                                     <tr v-for="(order, index) in orders.data" :class="index % 2 == 0 ? 'even' : 'odd'"
                                         :key="order.id">
                                         <td>{{ index + 1 }}</td>
-                                        <td class="sorting_1">{{ order.date }}</td>
+                                        <td class="sorting_1">{{ formatDate(order.createDate)
+                                        }}</td>
                                         <td class="sorting_1">{{ order.description }}</td>
                                         <td class="sorting_1">{{ order.city }} / {{ order.country }}</td>
                                         <td class="sorting_1">{{ order.total }}</td>
@@ -259,14 +260,13 @@
 import { OrderItemListDto } from '@/models/OrderItems/OrderItemListDto';
 import { OrderListDto } from '@/models/Orders/OrderListDto';
 import { PaginationModel } from '@/models/PaginationModel';
+import { formatDate } from '@/helpers/dateHelper'
 
 export default {
     data() {
         return {
             pageSize: 10,
             pageIndex: 0,
-            // orderUpdateDto: new OrderUpdateDto(),
-            // orderCreateDto: new OrderCreateDto(),
             orderItems: [] as OrderItemListDto[],
             orders: new PaginationModel<OrderListDto>()
         }
@@ -275,6 +275,7 @@ export default {
         await this.getOrders();
     },
     methods: {
+        formatDate,
         changePageIndex(pageIndex: number) {
             this.pageIndex = pageIndex;
             this.getOrders();

@@ -1,9 +1,11 @@
 using Discount.gRPC.Repositories.Interfaces;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Discount.gRPC.Services
 {
+    [Authorize]
     public class DiscountService(IDiscountRepository discountRepository) : gRPC.DiscountService.DiscountServiceBase
     {
         public override async Task<DiscountReply?> GetDiscountByItemId(ItemDiscountRequestModel request, ServerCallContext context)

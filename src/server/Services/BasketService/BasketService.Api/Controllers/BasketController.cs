@@ -1,6 +1,7 @@
 ﻿using BasketService.Api.Core.Application.Services;
 using BasketService.Api.Core.Domain.Models;
 using CommonLibrary.Controllers;
+using CommonLibrary.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +10,9 @@ namespace BasketService.Api.Controllers
     [Authorize]
     public class BasketController(
         IServiceProvider services,
-        IIdentityService identityService) : BaseController<IBasketService>(services)
+        IHttpContextAccessor httpClient) : BaseController<IBasketService>(services)
     {
-        private readonly Guid _userId = identityService.GetUserId().Value;
-
-        [HttpGet("isup")]
-        public IActionResult Get()
-        {
-            return Ok("Basket Service is Up and Running");
-        }
+        private readonly Guid _userId = httpClient.GetUserId();
 
         [HttpGet]
         public async Task<IActionResult> GetBasket()
@@ -26,7 +21,6 @@ namespace BasketService.Api.Controllers
             basket.Data ??= new Basket(_userId);
             return CreateActionResult(basket);
         }
-
 
         [HttpPost]
         [Route("update")]

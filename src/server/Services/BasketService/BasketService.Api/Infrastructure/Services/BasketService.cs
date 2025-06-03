@@ -2,6 +2,7 @@
 using BasketService.Api.Core.Application.Services;
 using BasketService.Api.Core.Domain.Models;
 using BasketService.Api.IntegrationEvents.Events;
+using CommonLibrary.Helpers;
 using CommonLibrary.Models;
 using Discount.gRPC;
 using EventBus.Base.Abstraction;
@@ -12,13 +13,13 @@ namespace BasketService.Api.Infrastructure.Services
 {
     // Öyle bir ürünün olup olmadığı kontrol edildikten sonra sepete ekleme işlemi de yapılabilir
     public class BasketService(IBasketRepository basketRepository, IEventBus eventBus,
-        ILogger<BasketService> logger, IIdentityService identityService,
+        ILogger<BasketService> logger, IHttpContextAccessor httpContext,
         DiscountService.DiscountServiceClient discountService) : IBasketService
     {
         private readonly IBasketRepository _basketRepository = basketRepository;
         private readonly IEventBus _eventBus = eventBus;
         private readonly ILogger<BasketService> _logger = logger;
-        private readonly Guid _userId = identityService.GetUserId().Value;
+        private readonly Guid _userId = httpContext.GetUserId();
 
         public async Task<ResponseDto<bool>> DeleteBasketAsync()
         {
@@ -47,14 +48,14 @@ namespace BasketService.Api.Infrastructure.Services
         public async Task<ResponseDto<bool>> CheckoutAsync([FromBody] BasketCheckout basketCheckout)
         {
             basketCheckout.UserId = _userId;
-            var basket = await _basketRepository.GetBasketAsync(_userId);
+            var basket = await GetBasketAsync();
 
             if (basket == null)
                 return ResponseDto<bool>.Fail("Empty basket", HttpStatusCode.BadRequest);
 
             var eventMessage = new OrderCreatedIntegrationEvent(basketCheckout.City, basketCheckout.Street,
                 basketCheckout.State, basketCheckout.Country, basketCheckout.ZipCode, basketCheckout.CardNumber, basketCheckout.CardHolderName,
-                basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.UserId, basket, basketCheckout.Description);
+                basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.UserId, basket.Data, basketCheckout.Description);
 
             try
             {

@@ -19,11 +19,11 @@ namespace Discount.Api.Endpoints
                 return discountRepository.GetByIdAsync(id);
             });
 
-            app.MapPost("/discounts", async ([FromBody] Discount.Api.Models.Discount discount, [FromServices] IDiscountRepository discountRepository) =>
+            app.MapPost("/discounts", async ([FromBody] Models.Discount discount, [FromServices] IDiscountRepository discountRepository) =>
             {
                 await discountRepository.AddAsync(discount);
                 return await discountRepository.SaveChangesAsync();
-            });
+            }).RequireAuthorization();
 
             app.MapPost("/discounts/addToItem/{discountId:int}/{itemId:int}", async (int discountId, int itemId,
                 [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository productRepository) =>
@@ -32,7 +32,7 @@ namespace Discount.Api.Endpoints
                 if (discount is null) throw new Exception("Discount doesn't exist");
                 await productRepository.AddAsync(new CatalogItem { Id = itemId, DiscountId = discountId });
                 return await productRepository.SaveChangesAsync();
-            });
+            }).RequireAuthorization();
 
             app.MapPut("/discounts/addToItem/{discountId:int}/{itemId:int}", async (int discountId, int itemId,
                 [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository productRepository) =>
@@ -41,14 +41,14 @@ namespace Discount.Api.Endpoints
                 if (discount is null) throw new Exception("Discount doesn't exist");
                 productRepository.Update(new CatalogItem { Id = itemId, DiscountId = discountId });
                 return await productRepository.SaveChangesAsync();
-            });
+            }).RequireAuthorization();
 
-            app.MapPut("/discounts", async ([FromBody] Discount.Api.Models.Discount discount, [FromServices] IDiscountRepository discountRepository) =>
+            app.MapPut("/discounts", async ([FromBody] Models.Discount discount, [FromServices] IDiscountRepository discountRepository) =>
             {
                 var discounts = discountRepository.Update(discount);
                 await discountRepository.SaveChangesAsync();
                 return discounts;
-            });
+            }).RequireAuthorization();
         }
     }
 }
