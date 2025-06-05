@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
+using CommonLibrary.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Features.Queries.ViewModels;
 using OrderService.Application.Interfaces.Repositories;
-using OrderService.Domain.Models.ViewModels;
 
 namespace OrderService.Application.Features.Queries.GetAllOrderDetails
 {
-    public class GetAllOrderDetailsQueryHandler(IOrderRepository orderRepository, IMapper mapper) : IRequestHandler<GetAllOrderDetailsQuery, PaginatedItemsViewModel<OrderDetailViewModel>>
+    public class GetAllOrderDetailsQueryHandler(IOrderRepository orderRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        : IRequestHandler<GetAllOrderDetailsQuery, PaginatedItemsViewModel<OrderDetailViewModel>>
     {
         public async Task<PaginatedItemsViewModel<OrderDetailViewModel>> Handle(GetAllOrderDetailsQuery request, CancellationToken cancellationToken)
         {

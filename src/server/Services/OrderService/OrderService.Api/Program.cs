@@ -30,6 +30,7 @@ builder.Services
     .ConfigureEventHandlers()
     .ConfigureConsul(builder.Configuration);
 builder.Services.AddHealthChecks();
+builder.Services.ConfigureAuth(builder.Configuration);
 
 builder.Services.AddSingleton<IEventBus>(sp =>
 {
@@ -63,9 +64,8 @@ app.MigrateDbContext<OrderDbContext>((context, services) =>
         .Wait();
 });
 
-
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");

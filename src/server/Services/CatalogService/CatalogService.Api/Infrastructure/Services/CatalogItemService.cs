@@ -3,6 +3,7 @@ using CatalogService.Api.Core.Domain;
 using CatalogService.Api.Infrastructure.Context;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
+using Discount.gRPC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,10 @@ using System.Net;
 
 namespace CatalogService.Api.Infrastructure.Services
 {
-    public class CatalogItemService(CatalogContext dbContext, IOptionsSnapshot<CatalogSettings> settings)
+    public class CatalogItemService(
+        CatalogContext dbContext,
+        IOptionsSnapshot<CatalogSettings> settings,
+        DiscountService.DiscountServiceClient discountService)
         : GenericRepository<CatalogContext, CatalogItem, int>(dbContext), ICatalogItemService
     {
         private readonly CatalogSettings _settings = settings.Value;
@@ -19,6 +23,7 @@ namespace CatalogService.Api.Infrastructure.Services
             if (!string.IsNullOrEmpty(ids))
             {
                 var items = await GetItemsByIds(ids);
+                await ApplyDiscount(items);
                 var paginatedItems = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, items.Count, items);
                 return ResponseDto<PaginatedItemsViewModel<CatalogItem>>
                     .GenerateResponse(items.Count > 0)
@@ -34,6 +39,7 @@ namespace CatalogService.Api.Infrastructure.Services
                 .Include(c => c.CatalogType)
                 .Include(c => c.CatalogBrand)
                 .ToListAsync();
+            await ApplyDiscount(itemsOnPage);
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
 
             var model = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
@@ -52,6 +58,7 @@ namespace CatalogService.Api.Infrastructure.Services
                 return ResponseDto<CatalogItem>.Fail("Catalog could not be found!", HttpStatusCode.NotFound);
 
             item.PictureUri = baseUri + item.PictureFileName;
+            await ApplyDiscount(item);
             return ResponseDto<CatalogItem>.Success(item, HttpStatusCode.OK);
         }
 
@@ -70,6 +77,7 @@ namespace CatalogService.Api.Infrastructure.Services
                 .ToListAsync();
 
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
+            await ApplyDiscount(itemsOnPage);
             var response = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
 
             return ResponseDto<PaginatedItemsViewModel<CatalogItem>>.Success(response, HttpStatusCode.OK);
@@ -93,6 +101,7 @@ namespace CatalogService.Api.Infrastructure.Services
                 .ToListAsync();
 
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
+            await ApplyDiscount(itemsOnPage);
 
             var response = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogItem>>.Success(response, HttpStatusCode.OK);
@@ -182,6 +191,30 @@ namespace CatalogService.Api.Infrastructure.Services
             }
 
             return items;
+        }
+
+        private async Task ApplyDiscount(List<CatalogItem> catalogItems)
+        {
+            var request = new ItemDiscountsRequestModel();
+            request.ItemIds.AddRange(catalogItems.Select(_ => _.Id));
+            var discounts = await discountService.GetDiscountsByItemIdsAsync(request);
+            if (discounts is not null)
+            {
+                CatalogItem catalogItem = null;
+                foreach (var discount in discounts.Discounts)
+                {
+                    catalogItem = catalogItems.First(_ => _.Id == discount.ItemId);
+                    catalogItem.DiscountAmount = (decimal)discount.Amount > (decimal)discount.Percentage * catalogItem.Price
+                        ? (decimal)discount.Amount
+                        : (decimal)discount.Percentage * catalogItem.Price / 100;
+                }
+            }
+        }
+
+        private async Task ApplyDiscount(CatalogItem catalogItem)
+        {
+            if (catalogItem is not null)
+                await ApplyDiscount([catalogItem]);
         }
     }
 }

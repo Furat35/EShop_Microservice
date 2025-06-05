@@ -1,11 +1,11 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
+  "compilerOptions": {
+    "baseUrl": ".", // ensures relative paths start from root
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@user/*": ["user/*"],
+      "@admin/*": ["admin/*"]
     }
-  ]
+  },
+  "include": ["src", "admin", "user"]
 }

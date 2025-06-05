@@ -35,7 +35,11 @@ namespace BasketService.Api.Controllers
         {
             var basket = await Service.GetBasketAsync();
             basket.Data ??= new Basket(_userId);
-            basket.Data.Items.Add(basketItem);
+            var basketItemExists = basket.Data.Items.FirstOrDefault(_ => _.ItemId == basketItem.ItemId);
+            if (basketItemExists is null)
+                basket.Data.Items.Add(basketItem);
+            else
+                basketItemExists.Quantity += basketItem.Quantity;
             var response = await Service.UpdateBasketAsync(basket.Data);
 
             return CreateActionResult(response);

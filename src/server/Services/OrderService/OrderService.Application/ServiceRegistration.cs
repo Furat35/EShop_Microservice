@@ -12,6 +12,7 @@ namespace OrderService.Application
 
             services.AddMediatR(assm);
             services.AddAutoMapper(assm);
+            services.AddHttpContextAccessor();
 
             return services;
         }

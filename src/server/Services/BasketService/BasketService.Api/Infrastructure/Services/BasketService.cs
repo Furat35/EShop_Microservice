@@ -55,7 +55,8 @@ namespace BasketService.Api.Infrastructure.Services
 
             var eventMessage = new OrderCreatedIntegrationEvent(basketCheckout.City, basketCheckout.Street,
                 basketCheckout.State, basketCheckout.Country, basketCheckout.ZipCode, basketCheckout.CardNumber, basketCheckout.CardHolderName,
-                basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.UserId, basket.Data, basketCheckout.Description);
+                basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.UserId,
+                httpContext.GetEmail(), basket.Data, basketCheckout.Description);
 
             try
             {

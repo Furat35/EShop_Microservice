@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using CommonLibrary.Models;
+using MediatR;
 using OrderService.Application.Features.Queries.ViewModels;
-using OrderService.Domain.Models.ViewModels;
 
 namespace OrderService.Application.Features.Queries.GetAllOrderDetails
 {

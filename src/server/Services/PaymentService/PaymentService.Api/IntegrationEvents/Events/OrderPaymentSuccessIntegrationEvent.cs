@@ -2,8 +2,9 @@
 
 namespace PaymentService.Api.IntegrationEvents.Events
 {
-    public class OrderPaymentSuccessIntegrationEvent(int orderId) : IntegrationEvent
+    public class OrderPaymentSuccessIntegrationEvent(Guid orderId, string email) : IntegrationEvent
     {
-        public int OrderId { get; set; } = orderId;
+        public Guid OrderId { get; set; } = orderId;
+        public string Email { get; set; } = email;
     }
 }

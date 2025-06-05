@@ -16,13 +16,12 @@ namespace PaymentService.Api.IntegrationEvents.EventHandlers
             var keyword = "PaymentSuccess";
             var paymentSuccessFlag = _configuration.GetValue<bool>(keyword);
             IntegrationEvent paymentEvent = paymentSuccessFlag
-                ? new OrderPaymentSuccessIntegrationEvent(@event.OrderId)
-                : new OrderPaymentFailedIntegrationEvent(@event.OrderId, "Payment failed!");
+                ? new OrderPaymentSuccessIntegrationEvent(@event.OrderId, @event.Email)
+                : new OrderPaymentFailedIntegrationEvent(@event.OrderId, "Payment failed!", @event.Email);
 
             logger.LogInformation($"OrderStartedIntegrationEventHandler in PaymentService is fired with PaymentSuccess: {paymentSuccessFlag}, orderId: {@event.OrderId}");
 
             eventBus.Publish(paymentEvent);
-
             return Task.CompletedTask;
         }
     }

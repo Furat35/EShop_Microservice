@@ -5,10 +5,11 @@ namespace BasketService.Api.IntegrationEvents.Events
 {
     public class OrderCreatedIntegrationEvent(string city, string street,
         string state, string country, string zipCode, string cardNumber, string cardHolderName,
-        DateTime cardExpiration, string cardSecurityNumber, int cardTypeId, Guid userId,
+        DateTime cardExpiration, string cardSecurityNumber, int cardTypeId, Guid userId, string email,
         Basket basket, string description) : IntegrationEvent
     {
         public Guid UserId { get; set; } = userId;
+        public string Email { get; set; } = email;
         public int OrderNumber { get; set; }
         public string City { get; set; } = city;
         public string Street { get; set; } = street;

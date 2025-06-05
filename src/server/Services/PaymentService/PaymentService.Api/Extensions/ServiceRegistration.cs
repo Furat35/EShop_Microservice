@@ -35,7 +35,7 @@ namespace PaymentService.Api.Extensions
                 return EventBusFactory.Create(config, sp);
             });
             services.ConfigureConsul(configuration);
-            services.ConfigureAuth(configuration);
+            //services.ConfigureAuth(configuration);
             services.AddHealthChecks();
 
             return services;
@@ -46,8 +46,8 @@ namespace PaymentService.Api.Extensions
             app.UseCustomExceptionHandling();
             app.MapHealthChecks("/health");
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.MapControllers();
 

@@ -11,7 +11,6 @@ namespace NotificationService.IntegrationEvents.EventHandlers
         {
             //fake payment failed process
             logger.LogInformation($"Order with OrderId : {@event.Id} failed, Error message : {@event.ErrorMessage}");
-
             return Task.CompletedTask;
         }
     }

@@ -7,8 +7,9 @@ namespace OrderService.Application.Features.Commands.CreateOrder
     {
         private readonly List<OrderItemDTO> _orderItems;
 
-        public Guid UserId { get; set; }
+        public Guid UserId { get; private set; }
         public string UserName { get; private set; }
+        public string Email { get; private set; }
         public string City { get; private set; }
         public string Street { get; private set; }
         public string State { get; private set; }
@@ -28,7 +29,8 @@ namespace OrderService.Application.Features.Commands.CreateOrder
         }
 
 
-        public CreateOrderCommand(List<BasketItem> basketItems, Guid userId, string userName, string city, string street, string state, string country, string zipcode,
+        public CreateOrderCommand(List<BasketItem> basketItems, Guid userId, string userName,
+            string email, string city, string street, string state, string country, string zipcode,
             string cardNumber, string cardHolderName, DateTime cardExpiration,
             string cardSecurityNumber, int cardTypeId, string description) : this()
         {
@@ -45,6 +47,7 @@ namespace OrderService.Application.Features.Commands.CreateOrder
 
             UserId = userId;
             UserName = userName;
+            Email = email;
             City = city;
             Street = street;
             State = state;

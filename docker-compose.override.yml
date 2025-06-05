@@ -47,6 +47,13 @@ services:
         - "5672:5672"
         - "15672:15672" 
 
+  smtp_server:
+    container_name: smtp_server
+    restart: always
+    ports:
+        - "7000:80"
+        - "2525:25" 
+
   consul_service_discovery:
     container_name: consul_service_discovery
     image: hashicorp/consul
@@ -99,6 +106,7 @@ services:
       - "ConsulConfig__Host=http://consul_service_discovery"
       - "ConsulConfig__Port=8500"
       - "ConnectionString=Server=sqlserverdb,1433;Database=CatalogDb;User Id=sa;Password=Firat3521;TrustServerCertificate=True"
+      - "GrpcSettings__Url=http://discount.grpc:10006"
     ports:
       - "5004:10004"
     volumes:
@@ -113,8 +121,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - "RabbitMQSettings__Host=rabbitmq"
       - "RabbitMQSettings__Port=5672"
+      - "SmtpConfig__Host=smtp_server"
+      - "SmtpConfig__Port=25"
     depends_on:
       - rabbitmq 
+      - smtp_server 
 
   paymentservice.api:
     environment:

@@ -23,12 +23,12 @@ namespace OrderService.Infrastructure.Repositories
             return entity;
         }
 
-        public virtual Task<List<T>> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes)
         {
             return Get(filter, null, includes);
         }
 
-        public virtual async Task<List<T>> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, params Expression<Func<T, object>>[] includes)
+        public virtual IQueryable<T> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = dbContext.Set<T>();
 
@@ -47,7 +47,7 @@ namespace OrderService.Infrastructure.Repositories
                 query = orderBy(query);
             }
 
-            return await query.ToListAsync();
+            return query;
         }
 
         public virtual IQueryable<T> GetAll()

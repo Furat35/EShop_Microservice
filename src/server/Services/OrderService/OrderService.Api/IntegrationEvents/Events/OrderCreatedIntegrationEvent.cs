@@ -7,6 +7,7 @@ namespace OrderService.Api.IntegrationEvents.Events
     {
         public Guid UserId { get; }
         public string UserName { get; }
+        public string Email { get; set; }
         public int OrderNumber { get; set; }
         public string City { get; set; }
         public string Street { get; set; }
@@ -22,13 +23,14 @@ namespace OrderService.Api.IntegrationEvents.Events
         public CustomerBasket Basket { get; }
         public string Description { get; set; }
 
-        public OrderCreatedIntegrationEvent(Guid userId, string userName, string city, string street,
+        public OrderCreatedIntegrationEvent(Guid userId, string userName, string email, string city, string street,
             string state, string country, string zipCode, string cardNumber, string cardHolderName,
             DateTime cardExpiration, string cardSecurityNumber, int cardTypeId, Guid requestId,
             CustomerBasket basket, string description)
         {
             UserId = userId;
             UserName = userName;
+            Email = email;
             City = city;
             Street = street;
             State = state;

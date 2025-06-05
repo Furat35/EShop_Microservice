@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Api.Helpers;
 using OrderService.Application.Features.Queries.GetAllOrderDetails;
+using OrderService.Application.Features.Queries.GetAllOrderDetailsByUserId;
 using OrderService.Application.Features.Queries.GetOrderDetailById;
 
 namespace OrderService.Api.Controllers
@@ -21,6 +22,13 @@ namespace OrderService.Api.Controllers
         public async Task<IActionResult> GetOrders([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
         {
             var res = await Mediator.Send(new GetAllOrderDetailsQuery { PageIndex = pageIndex, PageSize = pageSize });
+            return Ok(res);
+        }
+
+        [HttpGet("byuser")]
+        public async Task<IActionResult> GetOrdersByUserId([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
+        {
+            var res = await Mediator.Send(new GetAllOrderDetailsByUserIdQuery { PageIndex = pageIndex, PageSize = pageSize });
             return Ok(res);
         }
     }

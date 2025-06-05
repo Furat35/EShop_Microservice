@@ -10,9 +10,9 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
-        "PeriodTimespan": 1 
+        "Limit": 5,
+        "Period": "1s",
+        "PeriodTimespan": 1
       }
     },
     {
@@ -25,8 +25,38 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
+        "PeriodTimespan": 1
+      }
+    },
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "DownstreamPathTemplate": "/api/pics/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/pics/{everything}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamScheme": "http",
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Limit": 5,
+        "Period": "1s",
+        "PeriodTimespan": 1
+      }
+    },
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "DownstreamPathTemplate": "/pics/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/img/pics/{everything}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamScheme": "http",
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -40,8 +70,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -55,8 +85,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -70,8 +100,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -85,8 +115,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -100,8 +130,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -115,8 +145,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -130,8 +160,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     },
@@ -145,8 +175,8 @@
       "UpstreamScheme": "http",
       "RateLimitOptions": {
         "EnableRateLimiting": true,
-        "Limit": 1,
-        "Period": "2s",
+        "Limit": 5,
+        "Period": "1s",
         "PeriodTimespan": 1
       }
     }

@@ -21,11 +21,12 @@ namespace OrderService.Api.IntegrationEvents.EventHandlers
                 @event);
 
                 var createOrderCommand = new CreateOrderCommand(@event.Basket.Items,
-                                @event.UserId, @event.UserName,
-                                @event.City, @event.Street,
-                                @event.State, @event.Country, @event.ZipCode,
-                                @event.CardNumber, @event.CardHolderName, @event.CardExpiration,
-                                @event.CardSecurityNumber, @event.CardTypeId, @event.Description);
+                                @event.UserId, @event.UserName, @event.Email,
+                                @event.City, @event.Street, @event.State,
+                                @event.Country, @event.ZipCode, @event.CardNumber,
+                                @event.CardHolderName, @event.CardExpiration,
+                                @event.CardSecurityNumber, @event.CardTypeId,
+                                @event.Description);
 
                 await _mediator.Send(createOrderCommand);
             }

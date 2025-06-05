@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NotificationService.IntegrationEvents.EventHandlers;
 using NotificationService.IntegrationEvents.Events;
+using NotificationService.Models;
+using NotificationService.Services;
+using NotificationService.Services.Interfaces;
 using NotificationService.Workers;
 using RabbitMQ.Client;
 
@@ -52,8 +55,10 @@ namespace NotificationService
             services.AddLogging(conf => conf.AddConsole());
             services.AddTransient<OrderPaymentSuccessIntegrationEventHandler>();
             services.AddTransient<OrderPaymentFailedIntegrationEventHandler>();
+            services.Configure<SmtpConfiguration>(configuration.GetSection("SmtpConfig"));
+            services.AddSingleton<IEmailService, EmailService>();
 
-            services.AddSingleton<IEventBus>(sp =>
+            services.AddSingleton(sp =>
             {
                 var config = new EventBusConfig
                 {

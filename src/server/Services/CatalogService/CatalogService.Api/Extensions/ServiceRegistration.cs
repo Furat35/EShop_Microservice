@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Core.Application.Services;
+using CatalogService.Api.helpers;
 using CatalogService.Api.Infrastructure;
 using CatalogService.Api.Infrastructure.Context;
 using CatalogService.Api.Infrastructure.Services;
@@ -22,6 +23,12 @@ namespace CatalogService.Api.Extensions
             builder.Services.AddScoped<ICatalogBrandService, CatalogBrandService>();
             builder.Services.AddScoped<ICatalogTypeService, CatalogTypeService>();
             builder.Services.AddHealthChecks();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<GrpcAuthInterceptor>();
+            builder.Services.AddGrpcClient<Discount.gRPC.DiscountService.DiscountServiceClient>(config =>
+            {
+                config.Address = new Uri(builder.Configuration["GrpcSettings:Url"]!);
+            }).AddInterceptor<GrpcAuthInterceptor>();
 
             return builder.Services;
         }

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="1.7.14.7" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.14">
@@ -41,6 +42,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\CommonLibrary\CommonLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\DiscountService\Discount.gRPC\Protos\discount.proto" GrpcServices="Client">
+      <Link>Protos\discount.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

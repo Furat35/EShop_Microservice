@@ -1,15 +1,17 @@
 ﻿using EventBus.Base.Abstraction;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using OrderService.Application.IntegrationEvents;
 using OrderService.Application.Interfaces.Repositories;
 using OrderService.Domain.AggregateModels.OrderAggregate;
 
 namespace OrderService.Application.Features.Commands.CreateOrder
 {
-    public class CreateOrderCommandHandler(IOrderRepository orderRepository, IEventBus eventBus) : IRequestHandler<CreateOrderCommand, bool>
+    public class CreateOrderCommandHandler(IOrderRepository orderRepository, IEventBus eventBus, IHttpContextAccessor httpContextAccessor) : IRequestHandler<CreateOrderCommand, bool>
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IEventBus _eventBus = eventBus;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<bool> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
@@ -26,7 +28,7 @@ namespace OrderService.Application.Features.Commands.CreateOrder
             await _orderRepository.AddAsync(dbOrder);
             await _orderRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 
-            var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(request.UserName, request.UserId, dbOrder.Id);
+            var orderStartedIntegrationEvent = new OrderStartedIntegrationEvent(request.UserName, request.UserId, request.Email, dbOrder.Id);
 
             _eventBus.Publish(orderStartedIntegrationEvent);
 
