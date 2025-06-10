@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container px-4 px-lg-5">
-            <router-link class="nav-link fs-4" style="font-style: italic;" aria-current="page"
+            <router-link class="nav-link fs-4 fw-bold" style="font-style: italic;" aria-current="page"
                 :to="{ name: 'catalog' }">Ortac</router-link>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -15,18 +15,6 @@
                     <li class="nav-item">
                         <router-link class="nav-link active" aria-current="page"
                             :to="{ name: 'orders' }">Siparişlerim</router-link>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Shop</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#!">All Products</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li><a class="dropdown-item" href="#!">Popüler</a></li>
-                            <li><a class="dropdown-item" href="#!">Yeni</a></li>
-                        </ul>
                     </li>
                 </ul>
                 <form class="d-flex">

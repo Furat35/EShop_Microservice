@@ -1,7 +1,7 @@
 <template>
     <div class="col-sm-12 col-md-7">
-        <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-            <ul class="pagination">
+        <div class=" dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+            <ul class="pagination justify-content-center">
                 <li :class="['paginate_button', 'page-item', 'previous', paginationModel.hasPrevious ? '' : 'disabled']"
                     id="dataTable_previous"><button aria-controls="dataTable" :data-dt-idx="paginationModel.pageIndex"
                         tabindex="0" class="page-link"

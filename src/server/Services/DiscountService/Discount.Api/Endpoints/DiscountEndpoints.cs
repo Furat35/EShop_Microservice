@@ -26,21 +26,21 @@ namespace Discount.Api.Endpoints
             }).RequireAuthorization();
 
             app.MapPost("/discounts/addToItem/{discountId:int}/{itemId:int}", async (int discountId, int itemId,
-                [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository productRepository) =>
+                [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository catalogItemRepository) =>
             {
                 var discount = await discountRepository.GetByIdAsync(discountId, false);
                 if (discount is null) throw new Exception("Discount doesn't exist");
-                await productRepository.AddAsync(new CatalogItem { Id = itemId, DiscountId = discountId });
-                return await productRepository.SaveChangesAsync();
+                await catalogItemRepository.AddAsync(new CatalogItem { Id = itemId, DiscountId = discountId });
+                return await catalogItemRepository.SaveChangesAsync();
             }).RequireAuthorization();
 
             app.MapPut("/discounts/addToItem/{discountId:int}/{itemId:int}", async (int discountId, int itemId,
-                [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository productRepository) =>
+                [FromServices] IDiscountRepository discountRepository, [FromServices] ICatalogItemRepository catalogItemRepository) =>
             {
                 var discount = await discountRepository.GetByIdAsync(discountId, false);
                 if (discount is null) throw new Exception("Discount doesn't exist");
-                productRepository.Update(new CatalogItem { Id = itemId, DiscountId = discountId });
-                return await productRepository.SaveChangesAsync();
+                catalogItemRepository.Update(new CatalogItem { Id = itemId, DiscountId = discountId });
+                return await catalogItemRepository.SaveChangesAsync();
             }).RequireAuthorization();
 
             app.MapPut("/discounts", async ([FromBody] Models.Discount discount, [FromServices] IDiscountRepository discountRepository) =>

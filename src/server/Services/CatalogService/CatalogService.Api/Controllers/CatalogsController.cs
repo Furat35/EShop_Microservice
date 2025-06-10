@@ -34,9 +34,9 @@ namespace CatalogService.Api.Controllers
             return CreateActionResult(response);
         }
 
-        [HttpGet("type/{catalogTypeId:int?}/brand/{catalogBrandId:int?}")]
+        [HttpGet("type/brand")]
         [AllowAnonymous]
-        public async Task<IActionResult> ItemsByTypeIdAndBrandId(int? catalogTypeId, int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+        public async Task<IActionResult> ItemsByTypeIdAndBrandId([FromQuery] int? catalogTypeId, [FromQuery] int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
         {
             var response = await catalogService.ItemsByTypeIdAndBrandIdAsync(catalogTypeId, catalogBrandId, pageSize, pageIndex);
             return CreateActionResult(response);

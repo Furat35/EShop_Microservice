@@ -2,8 +2,10 @@
     <div class="cart-container">
         <h2>Sepetim</h2>
 
-        <div v-if="basket.items.length === 0">
-            <p>Sepetiniz boş.</p>
+        <div v-if="basket.items.length === 0" style="margin-bottom: 200px; margin-top: 100px;text-align: center;">
+            <p>Sepetiniz boş</p>
+            <router-link :to="{ name: 'catalog' }" class="btn btn-success" style="font-weight: bold;">Ana
+                Sayfaya Dön</router-link>
         </div>
 
         <div v-else class="cart-list">
@@ -68,7 +70,6 @@ export default {
     async created() {
         await this.getCart();
         emitter.emit('basket-updated')
-
     },
     computed: {
         totalPrice() {
@@ -86,14 +87,9 @@ export default {
             emitter.emit('hide-spinner');
         },
         async removeItem(itemId) {
-            try {
-                this.basket.items = this.basket.items.filter(item => item.itemId !== itemId);
-                await this.$axios.post(`basket/update`, this.basket);
-                emitter.emit('basket-updated')
-
-            } catch (error) {
-                console.error('Silme işlemi başarısız:', error);
-            }
+            this.basket.items = this.basket.items.filter(item => item.itemId !== itemId);
+            await this.$axios.post(`basket/update`, this.basket);
+            emitter.emit('basket-updated')
         },
         async increaseItemQuantity(itemId: number) {
             const item = this.basket.items.find(item => item.itemId === itemId);

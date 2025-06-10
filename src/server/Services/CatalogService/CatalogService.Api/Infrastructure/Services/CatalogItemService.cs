@@ -204,7 +204,7 @@ namespace CatalogService.Api.Infrastructure.Services
                 foreach (var discount in discounts.Discounts)
                 {
                     catalogItem = catalogItems.First(_ => _.Id == discount.ItemId);
-                    catalogItem.DiscountAmount = (decimal)discount.Amount > (decimal)discount.Percentage * catalogItem.Price
+                    catalogItem.DiscountAmount = (decimal)discount.Amount > (decimal)discount.Percentage * catalogItem.Price / 100
                         ? (decimal)discount.Amount
                         : (decimal)discount.Percentage * catalogItem.Price / 100;
                 }
