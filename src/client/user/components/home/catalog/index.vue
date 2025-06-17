@@ -52,11 +52,11 @@
                 </div>
             </div>
 
-            <div class="row gx-4 gx-lg-5 row-cols-3 row-cols-md-4 row-cols-xl-4 justify-content-center">
+            <div class="row gx-4 row-cols-md-4 row-cols-xl-4 justify-content-center">
                 <div class="col mb-5" v-for="catalog in catalogs.data" :key="catalog.id">
                     <div class="card h-100">
-                        <img class="card-img-top" :src="'http://localhost:5000/img' + catalog.pictureUri" alt="..." />
-                        <div class="card-body p-4">
+                        <img class="card-img-top" :src="getApiGatewayUrl + 'img' + catalog.pictureUri" alt="..." />
+                        <div class="card-body p-2 p-xl-4">
                             <div class="text-center">
                                 <h5 class="fw-bolder">{{ catalog.name }}</h5>
                                 <span v-if="catalog.discountAmount">
@@ -125,10 +125,16 @@ export default {
         }
     },
     async created() {
+        console.log(import.meta.env.VITE_GATEWAY_URL);
         await this.getCatalogs();
         this.getCatalogTypes();
         this.getCatalogBrands();
         emitter.emit('basket-updated');
+    },
+    computed: {
+        getApiGatewayUrl() {
+            return import.meta.env.VITE_GATEWAY_URL;
+        }
     },
     methods: {
         changePageSize() {

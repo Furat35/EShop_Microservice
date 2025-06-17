@@ -4,7 +4,7 @@
             <div class="row justify-content-center">
                 <div class="col-5 mb-5">
                     <div class="card h-100">
-                        <img class="card-img-top" :src="'http://localhost:5000/img' + item.pictureUri" alt="..." />
+                        <img class="card-img-top" :src="getApiGatewayUrl + 'img' + item.pictureUri" alt="..." />
                         <div class="card-body p-4">
                             <div class="text-center">
                                 <h5 class="fw-bolder">{{ item.name }}</h5>
@@ -47,6 +47,11 @@ export default {
     data() {
         return {
             item: new CatalogItemListDto() as CatalogItemListDto
+        }
+    },
+    computed: {
+        getApiGatewayUrl() {
+            return import.meta.env.VITE_GATEWAY_URL;
         }
     },
     async created() {

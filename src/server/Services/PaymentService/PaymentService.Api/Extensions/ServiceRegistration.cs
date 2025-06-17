@@ -16,7 +16,7 @@ namespace PaymentService.Api.Extensions
             services.AddControllers();
             services.AddLogging(config => config.AddConsole());
             services.AddTransient<OrderStartedIntegrationEventHandler>();
-            services.AddSingleton<IEventBus>(sp =>
+            services.AddSingleton(sp =>
             {
                 var config = new EventBusConfig
                 {

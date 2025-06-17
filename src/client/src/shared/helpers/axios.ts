@@ -6,6 +6,6 @@ let accessToken =
   localStorageToken != null ? (JSON.parse(localStorageToken) as AuthResponseDto).accessToken : ''
 
 export default axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: import.meta.env.VITE_GATEWAY_URL,
   headers: { Authorization: accessToken != '' ? `Bearer ${accessToken}` : '' },
 })

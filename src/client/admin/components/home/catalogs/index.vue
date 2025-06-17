@@ -302,6 +302,7 @@ export default {
         }
     },
     async created() {
+        console.log(import.meta.env.VITE_GATEWAY_URL);
         this.getCatalogs();
         await this.getCatalogTypes();
         await this.getCatalogBrands();

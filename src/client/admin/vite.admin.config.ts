@@ -2,23 +2,22 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: 'user',
+  root: 'admin',
   plugins: [
     vue(),
     // vueDevTools(),
   ],
   resolve: {
     alias: {
-      '@user': fileURLToPath(new URL('./user', import.meta.url)),
-      '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+      '@admin': fileURLToPath(new URL('.', import.meta.url)),
+      '@shared': fileURLToPath(new URL('../src/shared', import.meta.url)),
     },
   },
   build: {
-    outDir: '../dist/user',
+    outDir: './dist/admin',
     emptyOutDir: true,
   },
 })

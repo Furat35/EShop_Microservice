@@ -10,7 +10,7 @@
 
         <div v-else class="cart-list">
             <div class="cart-item" v-for="item in basket.items" :key="item.itemId">
-                <img class="item-image" :src="'http://localhost:5000/img' + item.pictureUrl" alt="Ürün görseli" />
+                <img class="item-image" :src="getApiGatewayUrl + 'img' + item.pictureUrl" alt="Ürün görseli" />
 
                 <div class="item-details">
                     <h4>{{ item.itemName }}</h4>
@@ -77,6 +77,9 @@ export default {
                 const price = item.unitPrice - item.discountAmount;
                 return total + price * item.quantity;
             }, 0);
+        },
+        getApiGatewayUrl() {
+            return import.meta.env.VITE_GATEWAY_URL;
         }
     },
     methods: {
