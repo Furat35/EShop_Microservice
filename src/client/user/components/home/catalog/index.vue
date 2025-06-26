@@ -3,7 +3,7 @@
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Yeni Sezon Ürünleri</h1>
+                <h1 class="display-4 fw-bolder">New Sezon Products</h1>
                 <p class="lead fw-normal text-white-50 mb-0"></p>
             </div>
         </div>
@@ -13,7 +13,7 @@
 
             <div class="row mb-2">
                 <div class="col-3">
-                    <div class="dataTables_length" id="dataTable_length"><label class="me-2">Göster <select
+                    <div class="dataTables_length" id="dataTable_length"><label class="me-2">Show <select
                                 @change="changePageSize" name="dataTable_length" aria-controls="dataTable"
                                 class="custom-select custom-select-sm form-control form-control-sm" v-model="pageSize">
                                 <option value="25">25</option>
@@ -26,24 +26,24 @@
                     <div>
 
                         <div id="dataTable_filter" class="dataTables_filter ">
-                            <label for="category-type" class="me-4" style="text-align: start;">Kategori
+                            <label for="category-type" class="me-4" style="text-align: start;">Category
                                 <select class="form-select form-select-sm" id="category-type"
                                     v-model="catalogItemFilter.catalogTypeId" @change="catalogTypeChanged">
-                                    <option value="">Tümü</option>
+                                    <option value="">All</option>
                                     <option v-for="catalogType in catalogTypes" :value="catalogType.id">{{
                                         catalogType.type }}</option>
                                 </select></label>
-                            <label for="category-brand" class="me-4" style="text-align: start;">Marka
+                            <label for="category-brand" class="me-4" style="text-align: start;">Brand
                                 <select class="form-select form-select-sm" id="category-brand"
                                     v-model="catalogItemFilter.catalogBrandId" @change="catalogBrandChanged">
-                                    <option value="">Tümü</option>
+                                    <option value="">All</option>
                                     <option v-for="catalogBrand in catalogBrands" :value="catalogBrand.id">{{
                                         catalogBrand.brand }}</option>
                                 </select></label>
-                            <label class="mr-2 me-2" style="text-align: start">Ara
+                            <label class="mr-2 me-2" style="text-align: start">Search
                                 <input type="search" class="form-control form-control-sm" placeholder=""
                                     aria-controls="dataTable" @keydown.enter="search($event)"></label>
-                            <button class="btn btn-success p-1" @click="clearSearchInput">Temizle</button>
+                            <button class="btn btn-success p-1" @click="clearSearchInput">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -52,18 +52,21 @@
                 </div>
             </div>
 
-            <div class="row gx-4 row-cols-md-4 row-cols-xl-4 justify-content-center">
+            <div class="row gx-4 row-cols-md-4 row-cols-xl-4">
                 <div class="col mb-5" v-for="catalog in catalogs.data" :key="catalog.id">
                     <div class="card h-100">
                         <img class="card-img-top" :src="getApiGatewayUrl + 'img' + catalog.pictureUri" alt="..." />
                         <div class="card-body p-2 p-xl-4">
                             <div class="text-center">
-                                <h5 class="fw-bolder">{{ catalog.name }}</h5>
+                                <h5 class="fw-bolder" :title="catalog.name">{{ catalog.name.substring(0, 15) }} {{
+                                    catalog.name.length > 0 ?
+                                        '..' : '' }}</h5>
                                 <span v-if="catalog.discountAmount">
                                     <span style="text-decoration: line-through;">{{ catalog.price }} TL </span>
-                                    <span class="fw-bold fs-5 ms-2 me-1"> {{ catalog.price - catalog.discountAmount }}
+                                    <span class="fw-bold fs-6 ms-2 me-1"> {{ (catalog.price -
+                                        catalog.discountAmount).toFixed(2) }}
                                         TL</span>
-                                    <span class="text-danger fw-bold"> (-%{{ Math.round((catalog.discountAmount /
+                                    <span class="text-danger"> (-%{{ Math.round((catalog.discountAmount /
                                         catalog.price)
                                         * 100) }}) </span>
                                 </span>
@@ -77,10 +80,10 @@
                             <div class="text-center">
                                 <router-link class="btn btn-outline-dark mt-auto me-3 p-1 " style="width: 44%;"
                                     aria-current="page"
-                                    :to="{ name: 'catalogItem', params: { id: catalog.id } }">İncele</router-link>
+                                    :to="{ name: 'catalogItem', params: { id: catalog.id } }">View</router-link>
                                 <router-link class="btn btn-success mt-auto p-1 fs-6" aria-current="page"
-                                    style="width: 44%;" :to="{ name: 'catalog' }" @click="addToBasket(catalog)">Sepete
-                                    Ekle</router-link>
+                                    style="width: 44%;" :to="{ name: 'catalog' }" @click="addToBasket(catalog)"><i
+                                        class="bi-cart-fill me-1"></i> Add</router-link>
                             </div>
                         </div>
                     </div>
@@ -97,7 +100,6 @@
 <script lang="ts">
 import { Toast } from '@shared/helpers/sweetAlertHelpers';
 import type { CatalogBrandListDto } from '@shared/models/CatalogBrands/CatalogBrandListDto';
-import { CatalogItemCreateDto } from '@shared/models/CatalogItems/CatalogItemCreateDto';
 import { CatalogItemListDto } from '@shared/models/CatalogItems/CatalogItemListDto';
 import { CatalogItemUpdateDto } from '@shared/models/CatalogItems/CatalogItemUpdateDto';
 import { CatalogTypeListDto } from '@shared/models/CatalogTypes/CatalogTypeListDto';
@@ -114,7 +116,7 @@ export default {
         return {
             catalogs: new PaginationModel<CatalogItemListDto>(),
             pageSize: 25,
-            pageIndex: 0,
+            page: 0,
             catalogItemUpdate: new CatalogItemUpdateDto(),
             catalogItemFilter: {
                 catalogTypeId: '',
@@ -125,7 +127,6 @@ export default {
         }
     },
     async created() {
-        console.log(import.meta.env.VITE_GATEWAY_URL);
         await this.getCatalogs();
         this.getCatalogTypes();
         this.getCatalogBrands();
@@ -141,31 +142,30 @@ export default {
             this.getCatalogs();
         },
         pageChanged(pagination) {
-            this.pageIndex = pagination.pageIndex;
-            this.getCatalogs();
+            this.getCatalogs(pagination.page);
         },
         catalogTypeChanged() {
-            this.$axios.get(`catalogs/type/brand?catalogTypeId=${this.catalogItemFilter.catalogTypeId}&catalogBrandId=${this.catalogItemFilter.catalogBrandId}&pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`)
+            this.$axios.get(`catalogs/type/brand?catalogTypeId=${this.catalogItemFilter.catalogTypeId}&catalogBrandId=${this.catalogItemFilter.catalogBrandId}&page=${this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogs, res.data.data);
-                    this.pageIndex = this.catalogs.pageIndex;
+                    this.page = this.catalogs.page;
                 });
         },
         catalogBrandChanged() {
-            this.$axios.get(`catalogs/type/brand?catalogTypeId=${this.catalogItemFilter.catalogTypeId}&catalogBrandId=${this.catalogItemFilter.catalogBrandId}&pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`)
+            this.$axios.get(`catalogs/type/brand?catalogTypeId=${this.catalogItemFilter.catalogTypeId}&catalogBrandId=${this.catalogItemFilter.catalogBrandId}&page=${this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogs, res.data.data);
-                    this.pageIndex = this.catalogs.pageIndex;
+                    this.page = this.catalogs.page;
                 });
         },
-        async getCatalogs() {
+        async getCatalogs(page) {
             emitter.emit('show-spinner');
-            await this.$axios.get(`catalogs?pageIndex=${this.pageIndex}&&pageSize=${this.pageSize}`)
+            await this.$axios.get(`catalogs?page=${page ?? this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogs, res.data.data);
-                    this.pageIndex = this.catalogs.pageIndex;
-                    emitter.emit('hide-spinner');
-                });
+                    this.page = this.catalogs.page;
+                })
+                .finally(err => emitter.emit('hide-spinner'));
         },
         getCatalogById(catalogId: number) {
             return this.$axios.get(`catalogs/${catalogId}`)
@@ -183,15 +183,15 @@ export default {
             if (!name.target.value) {
                 Toast.fire({
                     icon: "error",
-                    title: "Ara alanı boş olamaz"
+                    title: "Search can't be empty"
                 });
                 return;
             }
 
-            this.$axios.get(`catalogs/name/${name.target.value}?pageIndex=${this.pageIndex}&&pageSize=${this.pageSize}`)
+            this.$axios.get(`catalogs/name/${name.target.value}?page=${this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogs, res.data.data);
-                    this.pageIndex = this.catalogs.pageIndex;
+                    this.page = this.catalogs.page;
                 });
         },
         clearSearchInput(event: any) {
@@ -209,12 +209,12 @@ export default {
             if (response.status === 200)
                 Toast.fire({
                     icon: "success",
-                    title: `${basketItem.itemName} sepete eklendi`
+                    title: `${basketItem.itemName} is added to basket`
                 });
             else
                 Toast.fire({
                     icon: "error",
-                    title: `${basketItem.itemName} sepete eklenirken sorun oluştur. Tekrar deneyiniz!`
+                    title: `Error occured during operation!`
                 });
             emitter.emit('basket-updated');
 

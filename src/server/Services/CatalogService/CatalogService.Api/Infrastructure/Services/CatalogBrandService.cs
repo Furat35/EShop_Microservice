@@ -11,12 +11,12 @@ namespace CatalogService.Api.Infrastructure.Services
     public class CatalogBrandService(CatalogContext dbContext)
         : GenericRepository<CatalogContext, CatalogBrand, int>(dbContext), ICatalogBrandService
     {
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(int pageIndex, int pageSize, string ids)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(PaginationRequestModel request, string ids)
         {
             if (!string.IsNullOrEmpty(ids))
             {
                 var items = await GetCatalogBrandsByIdsAsync(ids);
-                var paginatedItems = new PaginatedItemsViewModel<CatalogBrand>(pageIndex, pageSize, items.Count, items);
+                var paginatedItems = new PaginatedItemsViewModel<CatalogBrand>(request.Page, request.PageSize, items.Count, items);
                 return ResponseDto<PaginatedItemsViewModel<CatalogBrand>>
                    .GenerateResponse(items.Count > 0)
                    .Success(paginatedItems, HttpStatusCode.OK)
@@ -24,29 +24,30 @@ namespace CatalogService.Api.Infrastructure.Services
             }
 
             var totalItems = await GetAll().LongCountAsync();
-            var itemsOnPage = await GetAll()
-                .OrderBy(c => c.Brand)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
+            var itemsOnPage = GetAll();
+            itemsOnPage = itemsOnPage.OrderBy(c => c.Brand);
 
-            var model = new PaginatedItemsViewModel<CatalogBrand>(pageIndex, pageSize, totalItems, itemsOnPage);
+            if (request.PageSize != 0)
+                itemsOnPage = itemsOnPage.Skip(request.PageSize * request.Page).Take(request.PageSize);
+
+            var model = new PaginatedItemsViewModel<CatalogBrand>(request.Page, request.PageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogBrand>>.Success(model, HttpStatusCode.OK);
         }
 
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(string brand, int pageIndex, int pageSize)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(string brand, PaginationRequestModel request)
         {
             var totalItems = await GetAll()
                 .Where(ct => ct.Brand.Contains(brand))
                 .LongCountAsync();
-            var itemsOnPage = await GetAll()
-                .Where(ct => ct.Brand.Contains(brand))
-                .OrderBy(c => c.Brand)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
 
-            var model = new PaginatedItemsViewModel<CatalogBrand>(pageIndex, pageSize, totalItems, itemsOnPage);
+
+            var itemsOnPage = GetAll().Where(ct => ct.Brand.Contains(brand));
+            itemsOnPage= itemsOnPage.OrderBy(c => c.Brand);
+
+            if (request.PageSize != 0)
+                itemsOnPage = itemsOnPage.Skip(request.PageSize * request.Page).Take(request.PageSize);
+
+            var model = new PaginatedItemsViewModel<CatalogBrand>(request.Page, request.PageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogBrand>>.Success(model, HttpStatusCode.OK);
         }
 

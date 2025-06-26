@@ -1,11 +1,11 @@
 <template>
     <div class="cart-container">
-        <h2>Sepetim</h2>
+        <h2>Basket</h2>
 
         <div v-if="basket.items.length === 0" style="margin-bottom: 200px; margin-top: 100px;text-align: center;">
-            <p>Sepetiniz boş</p>
-            <router-link :to="{ name: 'catalog' }" class="btn btn-success" style="font-weight: bold;">Ana
-                Sayfaya Dön</router-link>
+            <p>Basket is empty</p>
+            <router-link :to="{ name: 'catalog' }" class="btn btn-success" style="font-weight: bold;">Go
+                Home</router-link>
         </div>
 
         <div v-else class="cart-list">
@@ -31,7 +31,7 @@
                     </p>
 
                     <p>
-                        <span class="me-4">Adet: {{ item.quantity }}</span>
+                        <span class="me-4">Quantity: {{ item.quantity }}</span>
                         <button class="btn" @click="increaseItemQuantity(item.itemId)"><i
                                 class="bi bi-plus-lg"></i></button>
                         <button class="btn" @click="decreaseItemQuantity(item.itemId)"><i
@@ -39,7 +39,7 @@
                     </p>
 
                     <div class="item-footer">
-                        <strong>Toplam: {{ (item.quantity * (item.unitPrice - item.discountAmount)).toFixed(2) }}
+                        <strong>Total: {{ (item.quantity * (item.unitPrice - item.discountAmount)).toFixed(2) }}
                             TL</strong>
                         <button @click="removeItem(item.itemId)" class="btn btn-danger ms-3">Sil</button>
                     </div>
@@ -47,11 +47,11 @@
             </div>
             <hr>
             <div class="cart-total">
-                <h4>Sepet Toplamı: {{ totalPrice.toFixed(2) }} TL</h4>
+                <h4 style="text-decoration: underline;">Basket Total: {{ totalPrice.toFixed(2) }} TL</h4>
             </div>
             <div class="text-center">
                 <router-link :to="{ name: 'basketCheckout' }" class="btn btn-success"
-                    style="font-weight: bold;width: 15%;">Onayla</router-link>
+                    style="font-weight: bold;width: 15%;">Confirm</router-link>
             </div>
         </div>
     </div>

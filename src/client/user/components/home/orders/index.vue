@@ -7,7 +7,7 @@
                         <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                             <div class="row mb-1">
                                 <div class="col-sm-12 col-md-6">
-                                    <div class="dataTables_length" id="dataTable_length"><label>Göster <select
+                                    <div class="dataTables_length" id="dataTable_length"><label>Show <select
                                                 @change="changePageSize" name="dataTable_length"
                                                 aria-controls="dataTable"
                                                 class="custom-select custom-select-sm form-control form-control-sm"
@@ -34,32 +34,31 @@
                                                 <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1"
                                                     colspan="1" aria-sort="ascending"
                                                     aria-label="Name: activate to sort column descending">
-                                                    Tarih</th>
+                                                    Date</th>
                                                 <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1"
                                                     colspan="1" aria-sort="ascending"
                                                     aria-label="Name: activate to sort column descending">
-                                                    Açıklama</th>
+                                                    Description</th>
                                                 <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1"
                                                     colspan="1" aria-sort="ascending"
                                                     aria-label="Name: activate to sort column descending">
-                                                    Adres</th>
+                                                    Address</th>
                                                 <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1"
                                                     colspan="1" aria-sort="ascending"
                                                     aria-label="Name: activate to sort column descending">
-                                                    Toplam Tutar</th>
+                                                    Total Price</th>
                                                 <th class="col-1" tabindex="3" aria-controls="dataTable" rowspan="1"
                                                     colspan="1" aria-label="Salary: activate to sort column ascending">
-                                                    Sipariş
-                                                    Detayları
+                                                    Order Detail
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="(order, index) in orders.data"
                                                 :class="index % 2 == 0 ? 'even' : 'odd'" :key="order.id">
-                                                <td>{{ pageSize * pageIndex + index + 1 }}</td>
+                                                <td>{{ pageSize * page + index + 1 }}</td>
                                                 <td class="sorting_1">{{ formatDate(order.createDate)
-                                                    }}</td>
+                                                }}</td>
                                                 <td class="sorting_1">{{ order.description }}</td>
                                                 <td class="sorting_1">{{ order.city }} / {{ order.country }}</td>
                                                 <td class="sorting_1">{{ order.total }} TL</td>
@@ -88,7 +87,7 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-5">
                                     <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                        Toplam Kayıt : {{ orders.count }}
+                                        Total Records : {{ orders.count }}
                                     </div>
                                 </div>
 
@@ -147,7 +146,7 @@ export default {
     data() {
         return {
             pageSize: 10,
-            pageIndex: 0,
+            page: 0,
             orderItems: [] as OrderItemListDto[],
             orders: new PaginationModel<OrderListDto>()
         }
@@ -158,8 +157,7 @@ export default {
     methods: {
         formatDate,
         pageChanged(pagination) {
-            this.pageIndex = pagination.pageIndex;
-            this.getOrders();
+            this.getOrders(pagination.page);
         },
         changePageSize() {
             this.getOrders();
@@ -168,12 +166,12 @@ export default {
             return this.$axios.get(`orders/${orderId}`)
                 .then(res => res.data)
         },
-        async getOrders() {
+        async getOrders(page) {
             emitter.emit('show-spinner');
-            return await this.$axios.get(`orders/byuser?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`)
+            return await this.$axios.get(`orders/byuser?page=${page ?? this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.orders, res.data);
-                    this.pageIndex = this.orders.pageIndex;
+                    this.page = this.orders.page;
                     emitter.emit('hide-spinner');
                 });
         },

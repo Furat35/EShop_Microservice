@@ -18,13 +18,13 @@ namespace CatalogService.Api.Infrastructure.Services
         : GenericRepository<CatalogContext, CatalogItem, int>(dbContext), ICatalogItemService
     {
         private readonly CatalogSettings _settings = settings.Value;
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> GetItemsAsync(int pageIndex = 0, int pageSize = 10, string ids = null)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> GetItemsAsync(int page = 0, int pageSize = 10, string ids = null)
         {
             if (!string.IsNullOrEmpty(ids))
             {
                 var items = await GetItemsByIds(ids);
                 await ApplyDiscount(items);
-                var paginatedItems = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, items.Count, items);
+                var paginatedItems = new PaginatedItemsViewModel<CatalogItem>(page, pageSize, items.Count, items);
                 return ResponseDto<PaginatedItemsViewModel<CatalogItem>>
                     .GenerateResponse(items.Count > 0)
                     .Success(paginatedItems, HttpStatusCode.OK)
@@ -34,7 +34,7 @@ namespace CatalogService.Api.Infrastructure.Services
             var totalItems = await GetAll().LongCountAsync();
             var itemsOnPage = await GetAll()
                 .OrderBy(c => c.Name)
-                .Skip(pageSize * pageIndex)
+                .Skip(pageSize * page)
                 .Take(pageSize)
                 .Include(c => c.CatalogType)
                 .Include(c => c.CatalogBrand)
@@ -42,7 +42,7 @@ namespace CatalogService.Api.Infrastructure.Services
             await ApplyDiscount(itemsOnPage);
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
 
-            var model = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var model = new PaginatedItemsViewModel<CatalogItem>(page, pageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogItem>>.Success(model, HttpStatusCode.OK);
         }
 
@@ -62,7 +62,7 @@ namespace CatalogService.Api.Infrastructure.Services
             return ResponseDto<CatalogItem>.Success(item, HttpStatusCode.OK);
         }
 
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> ItemsWithNameAsync(string name, int pageSize = 10, int pageIndex = 0)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> ItemsWithNameAsync(string name, int pageSize = 10, int page = 0)
         {
             var totalItems = await GetAll()
                 .Where(c => c.Name.Contains(name))
@@ -70,7 +70,7 @@ namespace CatalogService.Api.Infrastructure.Services
 
             var itemsOnPage = await GetAll()
                 .Where(c => c.Name.Contains(name))
-                .Skip(pageSize * pageIndex)
+                .Skip(pageSize * page)
                 .Take(pageSize)
                 .Include(c => c.CatalogType)
                 .Include(c => c.CatalogBrand)
@@ -78,12 +78,12 @@ namespace CatalogService.Api.Infrastructure.Services
 
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
             await ApplyDiscount(itemsOnPage);
-            var response = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var response = new PaginatedItemsViewModel<CatalogItem>(page, pageSize, totalItems, itemsOnPage);
 
             return ResponseDto<PaginatedItemsViewModel<CatalogItem>>.Success(response, HttpStatusCode.OK);
         }
 
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> ItemsByTypeIdAndBrandIdAsync(int? catalogTypeId, int? catalogBrandId, int pageSize, int pageIndex)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogItem>>> ItemsByTypeIdAndBrandIdAsync(int? catalogTypeId, int? catalogBrandId, int pageSize, int page)
         {
             var root = GetAll();
             if (catalogTypeId.HasValue)
@@ -96,14 +96,14 @@ namespace CatalogService.Api.Infrastructure.Services
                 .LongCountAsync();
 
             var itemsOnPage = await root
-                .Skip(pageSize * pageIndex)
+                .Skip(pageSize * page)
                 .Take(pageSize)
                 .ToListAsync();
 
             itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
             await ApplyDiscount(itemsOnPage);
 
-            var response = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var response = new PaginatedItemsViewModel<CatalogItem>(page, pageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogItem>>.Success(response, HttpStatusCode.OK);
         }
 

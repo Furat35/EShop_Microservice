@@ -15,10 +15,10 @@
 </template>
 
 <script lang='ts'>
-import { useUserStore } from '@admin/helpers/store';
 import { LoginRequestDto } from '@shared/models/AuthModels/LoginRequestDto';
+import { useUserStore } from '../helpers/store';
 import { LoginResponseDto } from '@shared/models/AuthModels/LoginResponseDto';
-import emitter from '@admin/helpers/eventBus';
+import emitter from '@user/helpers/eventBus';
 
 export default {
     data() {

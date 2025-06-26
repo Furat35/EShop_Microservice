@@ -1,22 +1,23 @@
 <template>
     <div class="main">
         <div class="login-container">
-            <h2>Kayıt Ol</h2>
+            <h2>Register</h2>
             <form @submit.prevent="register">
-                <input type="text" v-model="user.username" name="username" placeholder="Kullanıcı Adı" required>
-                <input type="text" v-model="user.fullname" name="fullname" placeholder="Ad-Soyad" required>
-                <input type="email" v-model="user.email" name="email" placeholder="Mail" required>
-                <input type="password" v-model="user.password" name="password" placeholder="Şifre" required>
-                <button type="submit">Kayıt Ol</button>
+                <input type="text" v-model="user.username" name="username" placeholder="Username" required>
+                <input type="text" v-model="user.fullname" name="fullname" placeholder="Name Surname" required>
+                <input type="email" v-model="user.email" name="email" placeholder="Email" required>
+                <input type="password" v-model="user.password" name="password" placeholder="Password" required>
+                <button type="submit">Register</button>
             </form>
             <div class="signup-link">
-                <RouterLink :to="{ name: 'login' }">Giriş Yap</RouterLink>
+                <RouterLink :to="{ name: 'login' }">Login</RouterLink>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
+import emitter from '@admin/helpers/eventBus';
 import { RegisterDto } from '@shared/models/AuthModels/RegisterDto';
 export default {
     data() {
@@ -26,16 +27,9 @@ export default {
     },
     methods: {
         register() {
+            emitter.emit('show-spinner');
             this.$axios.post('auth/register', this.user)
-                .then(res => {
-                    if (res.status === 200) {
-                        console.log(res)
-                        localStorage.setItem('userInfo', JSON.stringify(res.data));
-                    }
-                    else {
-                        console.log(`${res.status} : ${res.data}`)
-                    }
-                });
+                .finally(() => emitter.emit('hide-spinner'));
         }
     }
 

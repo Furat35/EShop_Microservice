@@ -18,12 +18,12 @@ namespace OrderService.Application.Features.Queries.GetAllOrderDetailsByUserId
             var totalItems = await orders.CountAsync(cancellationToken);
             var itemsOnPage = await orders
                 .OrderByDescending(o => o.CreateDate)
-                .Skip(request.PageSize * request.PageIndex)
+                .Skip(request.PageSize * request.Page)
                 .Take(request.PageSize)
                 .Include(o => o.OrderItems)
                 .ToListAsync(cancellationToken);
             var mappedItems = mapper.Map<List<OrderDetailViewModel>>(itemsOnPage);
-            var model = new PaginatedItemsViewModel<OrderDetailViewModel>(request.PageIndex, request.PageSize, totalItems, mappedItems);
+            var model = new PaginatedItemsViewModel<OrderDetailViewModel>(request.Page, request.PageSize, totalItems, mappedItems);
             return model;
         }
     }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { getUserTokens, userIsAuthenticated } from '@shared/helpers/userExtensions';
 import type { AuthResponseDto } from '@shared/models/AuthModels/AuthResponseDto';
+import { useUserStore } from './helpers/store';
 </script>
 
 <template>
@@ -26,8 +26,8 @@ export default {
       return Date.now() > expireDate.getTime() - 2 * 60 * 1000;
     }
     setInterval(() => {
-      if (userIsAuthenticated() && shouldGetRefreshToken())
-        this.$axios.post('auth/refresh-token', getUserTokens())
+      if (useUserStore().getIsAuthenticated && shouldGetRefreshToken())
+        this.$axios.post('auth/refresh-token', useUserStore().getAccessToken)
           .then(res => {
             if (res)
               localStorage.setItem('userInfo', JSON.stringify(res.data));

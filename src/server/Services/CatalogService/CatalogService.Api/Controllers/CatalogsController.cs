@@ -1,6 +1,7 @@
 ﻿using CatalogService.Api.Core.Application.Services;
 using CatalogService.Api.Core.Domain;
 using CommonLibrary.Controllers;
+using CommonLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,9 @@ namespace CatalogService.Api.Controllers
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Items([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
+        public async Task<IActionResult> Items([FromQuery] PaginationRequestModel request, [FromQuery] string ids = null)
         {
-            var response = await catalogService.GetItemsAsync(pageIndex, pageSize, ids);
+            var response = await catalogService.GetItemsAsync(request.Page, request.PageSize, ids);
             return CreateActionResult(response);
         }
 
@@ -28,17 +29,17 @@ namespace CatalogService.Api.Controllers
 
         [HttpGet("name/{name:minlength(1)}")]
         [AllowAnonymous]
-        public async Task<IActionResult> ItemsWithName(string name, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+        public async Task<IActionResult> ItemsWithName(string name, [FromQuery] PaginationRequestModel request)
         {
-            var response = await catalogService.ItemsWithNameAsync(name, pageSize, pageIndex);
+            var response = await catalogService.ItemsWithNameAsync(name, request.PageSize, request.Page);
             return CreateActionResult(response);
         }
 
         [HttpGet("type/brand")]
         [AllowAnonymous]
-        public async Task<IActionResult> ItemsByTypeIdAndBrandId([FromQuery] int? catalogTypeId, [FromQuery] int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+        public async Task<IActionResult> ItemsByTypeIdAndBrandId([FromQuery] int? catalogTypeId, [FromQuery] int? catalogBrandId, [FromQuery] PaginationRequestModel request)
         {
-            var response = await catalogService.ItemsByTypeIdAndBrandIdAsync(catalogTypeId, catalogBrandId, pageSize, pageIndex);
+            var response = await catalogService.ItemsByTypeIdAndBrandIdAsync(catalogTypeId, catalogBrandId, request.PageSize, request.Page);
             return CreateActionResult(response);
         }
 
@@ -66,17 +67,17 @@ namespace CatalogService.Api.Controllers
         #region CatalogTypes
         [HttpGet("types")]
         [AllowAnonymous]
-        public async Task<IActionResult> CatalogTypes([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
+        public async Task<IActionResult> CatalogTypes([FromQuery] PaginationRequestModel request, [FromQuery] string ids = null)
         {
-            var response = await catalogTypeService.CatalogTypesAsync(pageIndex, pageSize, ids);
+            var response = await catalogTypeService.CatalogTypesAsync(request, ids);
             return CreateActionResult(response);
         }
 
         [HttpGet("types/bytype/{type:minlength(1)}")]
         [AllowAnonymous]
-        public async Task<IActionResult> CatalogTypes(string type, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> CatalogTypes(string type, [FromQuery] PaginationRequestModel request)
         {
-            var response = await catalogTypeService.CatalogTypesAsync(type, pageIndex, pageSize);
+            var response = await catalogTypeService.CatalogTypesAsync(type, request);
             return CreateActionResult(response);
         }
 
@@ -112,17 +113,17 @@ namespace CatalogService.Api.Controllers
         #region Catalog Brands
         [HttpGet("brands")]
         [AllowAnonymous]
-        public async Task<IActionResult> CatalogBrands([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10, [FromQuery] string ids = null)
+        public async Task<IActionResult> CatalogBrands([FromQuery] PaginationRequestModel request, [FromQuery] string ids = null)
         {
-            var response = await catalogBrandService.CatalogBrandsAsync(pageIndex, pageSize, ids);
+            var response = await catalogBrandService.CatalogBrandsAsync(request, ids);
             return CreateActionResult(response);
         }
 
         [HttpGet("brands/bybrand/{brand:minlength(1)}")]
         [AllowAnonymous]
-        public async Task<IActionResult> CatalogBrands(string brand, [FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> CatalogBrands(string brand, [FromQuery] PaginationRequestModel request)
         {
-            var response = await catalogBrandService.CatalogBrandsAsync(brand, pageIndex, pageSize);
+            var response = await catalogBrandService.CatalogBrandsAsync(brand, request);
             return CreateActionResult(response);
         }
 

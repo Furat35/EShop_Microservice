@@ -1,4 +1,3 @@
-import { userIsAuthenticated } from '@shared/helpers/userExtensions'
 import HomeView from '@admin/views/HomeView.vue'
 import LoginView from '@admin/views/LoginView.vue'
 import RegisterView from '@admin/views/RegisterView.vue'
@@ -9,6 +8,7 @@ import CatalogTypeComponent from '@admin/components/home/catalogTypes/index.vue'
 import CatalogBrandComponent from '@admin/components/home/catalogBrands/index.vue'
 import OrdersComponent from '@admin/components/home/orders/index.vue'
 import ProfileComponent from '@admin/components/home/profile/index.vue'
+import { useUserStore } from '@admin/helpers/store'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -63,16 +63,20 @@ const router = createRouter({
   ],
 })
 
-const authNotRequired = ['login', 'register', 'notFound']
+const authNotRequired = ['login', 'register', 'notFound', 'home']
 const pathsNotAllowedAfterLogin = ['register']
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = userIsAuthenticated()
+  console.log()
+  console.log(to.fullPath)
+  console.log(to.fullPath)
+  const isAuthenticated = useUserStore().getIsAuthenticated
   if (!isAuthenticated) {
     if (authNotRequired.includes(to.name as string)) next()
     else next({ name: 'notFound' })
   } else {
     if (pathsNotAllowedAfterLogin.includes(to.name as string)) return
+    if (to.fullPath === '/' || to.fullPath === '/admin') next({ name: 'catalog' })
     next()
   }
 })

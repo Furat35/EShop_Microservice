@@ -1,35 +1,35 @@
 <template>
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <router-link class="sidebar-brand d-flex align-items-center justify-content-center" :to="{ name: 'catalog' }">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
                 <div class="sidebar-brand-text mx-3">Admin Panel</div>
-            </a>
+            </router-link>
             <hr class="sidebar-divider">
             <li class="nav-item">
                 <router-link class="nav-link" :to="{ name: 'catalog' }">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Katalog</span>
+                    <span>Catalogs</span>
                 </router-link>
             </li>
             <li class="nav-item">
                 <router-link class="nav-link" :to="{ name: 'catalogType' }">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Kategoriler</span>
+                    <span>Categories</span>
                 </router-link>
             </li>
             <li class="nav-item">
                 <router-link class="nav-link" :to="{ name: 'catalogBrand' }">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Markalar</span>
+                    <span>Brands</span>
                 </router-link>
             </li>
             <li class="nav-item">
                 <router-link class="nav-link" :to="{ name: 'orders' }">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Siparişler</span>
+                    <span>Orders</span>
                 </router-link>
             </li>
             <hr class="sidebar-divider d-none d-md-block">
@@ -144,12 +144,12 @@
                                 aria-labelledby="userDropdown">
                                 <RouterLink :to="{ name: 'profile' }" class="dropdown-item">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profil
+                                    Profile
                                 </RouterLink>
                                 <div class="dropdown-divider"></div>
                                 <button class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Çıkış Yap
+                                    Logout
                                 </button>
                             </div>
                         </li>

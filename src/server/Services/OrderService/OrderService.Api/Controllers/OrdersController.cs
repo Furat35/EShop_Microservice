@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CommonLibrary.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Api.Helpers;
@@ -19,16 +20,16 @@ namespace OrderService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOrders([FromQuery] PaginationRequestModel request)
         {
-            var res = await Mediator.Send(new GetAllOrderDetailsQuery { PageIndex = pageIndex, PageSize = pageSize });
+            var res = await Mediator.Send(new GetAllOrderDetailsQuery { Page = request.Page, PageSize = request.PageSize });
             return Ok(res);
         }
 
         [HttpGet("byuser")]
-        public async Task<IActionResult> GetOrdersByUserId([FromQuery] int pageIndex = 0, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOrdersByUserId([FromQuery] PaginationRequestModel request)
         {
-            var res = await Mediator.Send(new GetAllOrderDetailsByUserIdQuery { PageIndex = pageIndex, PageSize = pageSize });
+            var res = await Mediator.Send(new GetAllOrderDetailsByUserIdQuery { Page = request.Page, PageSize = request.PageSize });
             return Ok(res);
         }
     }

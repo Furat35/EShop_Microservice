@@ -6,8 +6,8 @@ namespace CatalogService.Api.Core.Application.Services
 {
     public interface ICatalogBrandService : IGenericRepository<CatalogBrand, int>
     {
-        Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(int pageIndex, int pageSize, string ids);
-        Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(string brand, int pageIndex, int pageSize);
+        Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(PaginationRequestModel request, string ids);
+        Task<ResponseDto<PaginatedItemsViewModel<CatalogBrand>>> CatalogBrandsAsync(string brand, PaginationRequestModel request);
         Task<ResponseDto<CatalogBrand>> GetCatalogBrandByIdAsync(int catalogBrandId);
         Task<ResponseDto<bool>> CreateCatalogBrandAsync(CatalogBrand catalogBrand);
         Task<ResponseDto<bool>> UpdateCatalogBrandAsync(CatalogBrand catalogBrand);

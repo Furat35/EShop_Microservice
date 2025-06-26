@@ -1,12 +1,12 @@
 <template>
-    <h1 class="h3 mb-2 text-gray-800">Markalar</h1>
+    <h1 class="h3 mb-2 text-gray-800">Brands</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
                 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                     <div class="row">
                         <div class="col-sm-12 col-md-6">
-                            <div class="dataTables_length" id="dataTable_length"><label>Göster <select
+                            <div class="dataTables_length" id="dataTable_length"><label>Show <select
                                         @change="changePageSize" name="dataTable_length" aria-controls="dataTable"
                                         class="custom-select custom-select-sm form-control form-control-sm"
                                         v-model="pageSize">
@@ -23,15 +23,15 @@
                                             d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
                                         <path
                                             d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z" />
-                                    </svg> Ekle
+                                    </svg> Add
                                 </button>
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-6" style="text-align: end;">
-                            <div id="dataTable_filter" class="dataTables_filter"><label class="mr-2">Ara<input
+                            <div id="dataTable_filter" class="dataTables_filter"><label class="mr-2">Search<input
                                         type="search" class="form-control form-control-sm" placeholder=""
                                         @keydown.enter="search($event)" aria-controls="dataTable"></label>
-                                <button class="btn btn-success p-1" @click="clearSearchInput">Temizle</button>
+                                <button class="btn btn-success p-1" @click="clearSearchInput">Clear</button>
                             </div>
                         </div>
                     </div>
@@ -46,16 +46,16 @@
                                         </th>
                                         <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1" colspan="1"
                                             aria-sort="ascending" aria-label="Name: activate to sort column descending">
-                                            Marka</th>
+                                            Brand</th>
                                         <th class="col-1" tabindex="3" aria-controls="dataTable" rowspan="1" colspan="1"
-                                            aria-label="Salary: activate to sort column ascending">İşlemler
+                                            aria-label="Salary: activate to sort column ascending">Operations
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(catalogBrand, index) in catalogBrands.data"
                                         :class="index % 2 == 0 ? 'even' : 'odd'" :key="catalogBrand.id">
-                                        <td>{{ index + 1 }}</td>
+                                        <td>{{ (index + 1) + page * pageSize }}</td>
                                         <td class="sorting_1">{{ catalogBrand.brand }}</td>
                                         <td>
                                             <button brand="button" data-toggle="modal"
@@ -91,40 +91,11 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-5">
                             <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                Toplam Kayıt : {{ catalogBrands.count }}
+                                Total Records : {{ catalogBrands.count }}
                             </div>
                         </div>
-                        <div class="col-sm-12 col-md-7">
-                            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                                <ul class="pagination">
-                                    <li :class="['paginate_button', 'page-item', 'previous', catalogBrands.hasPrevious ? '' : 'disabled']"
-                                        id="dataTable_previous"><button aria-controls="dataTable"
-                                            :data-dt-idx="catalogBrands.pageIndex" tabindex="0" class="page-link"
-                                            @click="changePageIndex(catalogBrands.pageIndex - 1)">Önceki</button></li>
-                                    <li class="paginate_button page-item" v-if="catalogBrands.hasPrevious">
-                                        <button @click="changePageIndex(catalogBrands.pageIndex - 1)"
-                                            aria-controls="dataTable" :data-dt-idx="catalogBrands.pageIndex"
-                                            tabindex="0" class="page-link">{{
-                                                catalogBrands.pageIndex }}</button>
-                                    </li>
-                                    <li class="paginate_button page-item active">
-                                        <button @click="changePageIndex(catalogBrands.pageIndex)"
-                                            aria-controls="dataTable" :data-dt-idx="catalogBrands.pageIndex + 1"
-                                            tabindex="0" class="page-link">{{
-                                                catalogBrands.pageIndex + 1 }}</button>
-                                    </li>
-                                    <li class="paginate_button page-item" v-if="catalogBrands.hasNext">
-                                        <button @click="changePageIndex(catalogBrands.pageIndex + 1)"
-                                            aria-controls="dataTable" :data-dt-idx="catalogBrands.pageIndex + 2"
-                                            tabindex="0" class="page-link">{{
-                                                catalogBrands.pageIndex + 2 }}</button>
-                                    </li>
-                                    <li :class="['paginate_button', 'page-item', 'next', catalogBrands.hasNext ? '' : 'disabled']"
-                                        id="dataTable_next"><button href="#" aria-controls="dataTable"
-                                            :data-dt-idx="catalogBrands.pageIndex + 2" tabindex="0" class="page-link"
-                                            @click="changePageIndex(catalogBrands.pageIndex + 1)">Sonraki</button></li>
-                                </ul>
-                            </div>
+                        <div class="row justify-content-center">
+                            <PaginationComponent @page-changed="pageChanged" :pagination-model="catalogBrands" />
                         </div>
                     </div>
                 </div>
@@ -137,7 +108,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="catalogBrandUpdateModal">Güncelle</h5>
+                    <h5 class="modal-title" id="catalogBrandUpdateModal">Update</h5>
                     <button brand="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
@@ -145,18 +116,19 @@
                 <div class="modal-body">
                     <form @submit.prevent>
                         <div class="form-group">
-                            <label for="id" class="col-form-label" hidden>Id</label>
-                            <input type="text" class="form-control" id="id" hidden v-model="catalogBrandUpdateDto.id">
+                            <label class="col-form-label" hidden>Id
+                                <input type="text" class="form-control" hidden
+                                    v-model="catalogBrandUpdateDto.id"></label>
                         </div>
                         <div class="form-group">
-                            <label for="category-brand" class="col-form-label">Marka</label>
-                            <input type="text" class="form-control" id="category-brand"
+                            <label for="update-category-brand" class="col-form-label">Brand</label>
+                            <input type="text" class="form-control" id="update-category-brand"
                                 v-model="catalogBrandUpdateDto.brand">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button brand="button" class="btn btn-success" @click="catalogBrandUpdate">Kaydet</button>
+                    <button brand="button" class="btn btn-success" @click="catalogBrandUpdate">Save</button>
                 </div>
             </div>
         </div>
@@ -167,7 +139,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="catalogBrandCreateModal">Ekle</h5>
+                    <h5 class="modal-title" id="catalogBrandCreateModal">Add</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
@@ -175,14 +147,14 @@
                 <div class="modal-body">
                     <form @submit.prevent>
                         <div class="form-group">
-                            <label for="category-brand" class="col-form-label">Marka</label>
-                            <input type="text" class="form-control" id="category-brand"
+                            <label for="create-category-brand" class="col-form-label">Brand</label>
+                            <input type="text" class="form-control" id="create-category-brand"
                                 v-model="catalogBrandCreateDto.brand">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" @click="catalogBrandCreate">Kaydet</button>
+                    <button class="btn btn-success" @click="catalogBrandCreate">Save</button>
                 </div>
             </div>
         </div>
@@ -196,12 +168,16 @@ import { CatalogBrandListDto } from '@shared/models/CatalogBrands/CatalogBrandLi
 import { CatalogBrandUpdateDto } from '@shared/models/CatalogBrands/CatalogBrandUpdateDto';
 import { PaginationModel } from '@shared/models/PaginationModel';
 import Swal from 'sweetalert2'
+import PaginationComponent from '@admin/components/shared/pagination.vue'
 
 export default {
+    components: {
+        PaginationComponent
+    },
     data() {
         return {
             pageSize: 10,
-            pageIndex: 0,
+            page: 0,
             catalogBrandUpdateDto: new CatalogBrandUpdateDto(),
             catalogBrandCreateDto: new CatalogBrandCreateDto(),
             catalogBrands: new PaginationModel<CatalogBrandListDto>()
@@ -211,22 +187,21 @@ export default {
         await this.getCatalogBrands();
     },
     methods: {
-        changePageIndex(pageIndex: number) {
-            this.pageIndex = pageIndex;
-            this.getCatalogBrands();
-        },
         changePageSize() {
             this.getCatalogBrands();
+        },
+        pageChanged(pagination) {
+            this.getCatalogBrands(pagination.page);
         },
         getCatalogBrandById(catalogBrandId: number) {
             return this.$axios.get(`catalogs/brands/${catalogBrandId}`)
                 .then(res => res.data.data);
         },
-        getCatalogBrands() {
-            return this.$axios.get(`catalogs/brands`)
+        getCatalogBrands(page) {
+            return this.$axios.get(`catalogs/brands?page=${page ?? this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogBrands, res.data.data);
-                    this.pageIndex = this.catalogBrands.pageIndex;
+                    this.page = this.catalogBrands.page;
                 });
         },
         async showCatalogBrandUpdateModal(catalogBrandId: number) {
@@ -238,15 +213,14 @@ export default {
                     this.getCatalogBrands();
                     Toast.fire({
                         icon: "success",
-                        title: "Güncelleme işlemi başarılı"
+                        title: "Update success"
                     });
                 })
                 .catch(err =>
                     Swal.fire({
                         icon: "error",
                         title: "Hata!",
-                        text: `İşlem sırasında hata oluştu (${err.status} : ${err})!`,
-                        footer: '<a href="#">Why do I have this issue?</a>'
+                        text: `Error occured during operation (${err.status} : ${err})!`,
                     }));
         },
         catalogBrandCreate() {
@@ -255,23 +229,23 @@ export default {
                     this.getCatalogBrands();
                     Toast.fire({
                         icon: "success",
-                        title: "Ürün başarıyla eklendi"
+                        title: "Product is added"
                     });
                     Object.assign(this.catalogBrandCreateDto, new CatalogBrandCreateDto());
                 })
                 .catch(err =>
                     Swal.fire({
                         icon: "error",
-                        title: "Hata!",
-                        text: `İşlem sırasında hata oluştu (${err.status} : ${err})!`,
+                        title: "Error",
+                        text: `Error occured during operation (${err.status} : ${err})!`,
                     }));
         },
         catalogBrandDelete(catalogBrandName: string, catalogBrandId: number) {
             Swal.fire({
-                title: `${catalogBrandName} Silmek istediğine emin misin?`,
+                title: `Are you sure deleting ${catalogBrandName}?`,
                 showCancelButton: true,
-                confirmButtonText: "Sil",
-                cancelButtonText: "İptal"
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.$axios.delete(`catalogs/brands/${catalogBrandId}`,)
@@ -279,14 +253,14 @@ export default {
                             this.getCatalogBrands();
                             Toast.fire({
                                 icon: "success",
-                                title: "Silme işlemi başarılı"
+                                title: "Deleted"
                             });
                         })
                         .catch(err =>
                             Swal.fire({
                                 icon: "error",
-                                title: "Hata!",
-                                text: `İşlem sırasında hata oluştu (${err.status} : ${err})!`,
+                                title: "Error!",
+                                text: `Error occured during operation (${err.status} : ${err})!`,
                             }));
                 }
             });
@@ -295,15 +269,15 @@ export default {
             if (!name.target.value) {
                 Toast.fire({
                     icon: "error",
-                    title: "Ara alanı boş olamaz"
+                    title: "Search can't be empty"
                 });
                 return;
             }
 
-            this.$axios.get(`catalogs/brands/${name.target.value}?pageIndex=${this.pageIndex}&&pageSize=${this.pageSize}`)
+            this.$axios.get(`catalogs/brands/${name.target.value}?page=${this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.catalogBrands, res.data);
-                    this.pageIndex = this.catalogBrands.pageIndex;
+                    this.page = this.catalogBrands.page;
                 });
         },
         clearSearchInput(event: any) {

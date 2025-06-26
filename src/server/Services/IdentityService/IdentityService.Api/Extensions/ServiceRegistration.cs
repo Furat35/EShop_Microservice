@@ -38,8 +38,16 @@ namespace IdentityService.Api.Extensions
         {
             using (var scope = app.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-                dbContext.Database.Migrate();
+                try
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+                    dbContext.Database.Migrate();
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine($"Error occured while migration : {err}");
+                }
+                
             }
 
             app.UseCustomExceptionHandling();

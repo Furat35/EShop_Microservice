@@ -8,13 +8,13 @@
                         <div class="card-body p-4">
                             <div class="text-center">
                                 <h5 class="fw-bolder">{{ item.name }}</h5>
-                                {{ item.price }} TL
+                                {{ item.price.toFixed(2) }} TL
                             </div>
                         </div>
                         <div class="card-footer p-3 pt-0 border-top-0 bg-transparent">
                             <div class="text-center">
                                 <router-link class="btn btn-success mt-auto p-1 fs-6" aria-current="page"
-                                    style="width: 44%;" :to="{ name: 'catalog' }">Sepete Ekle</router-link>
+                                    style="width: 44%;" :to="{ name: 'catalog' }">Add To Basket</router-link>
                             </div>
 
                         </div>
@@ -25,10 +25,11 @@
                         <div class="h-100 card-body p-0 bg-white shadow-lg rounded-2xl overflow-hidden p-4 mt-6">
                             <div class="p-4">
                                 <h2 class="text-xl font-semibold mb-2">{{ item.name }}</h2> <br>
-                                <p class="text-green-600 font-bold mb-2">Fiyat : {{ item.price.toFixed(2) }} TL</p>
-                                <p class="text-sm text-gray-500">Stok : {{ item.availableStock }}</p>
+                                <p class="text-green-600 font-bold mb-2">Price : {{ item.price.toFixed(2) }} TL</p>
+                                <p class="text-sm text-gray-500">Stock : {{ item.availableStock }}</p>
                                 <hr>
-                                <p class="text-gray-600 mb-2">Açıklama <br> {{ item.description }}</p>
+                                <br>
+                                <p>{{ item.description }}</p>
                             </div>
                         </div>
                     </div>

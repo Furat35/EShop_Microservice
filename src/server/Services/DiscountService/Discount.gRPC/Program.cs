@@ -1,4 +1,3 @@
-using CommonLibrary.Extensions;
 using CommonLibrary.Middlewares;
 using Discount.gRPC.Repositories;
 using Discount.gRPC.Repositories.Context;
@@ -23,24 +22,21 @@ builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<ICatalogItemRepository, CatalogItemRepository>();
 builder.Services.AddGrpc();
 builder.Services.AddHealthChecks();
-builder.Services.ConfigureConsul(builder.Configuration);
-builder.Services.ConfigureAuth(builder.Configuration);
+//builder.Services.ConfigureConsul(builder.Configuration);
 
 var app = builder.Build();
 
 app.MapHealthChecks("/health");
 app.UseCustomExceptionHandling();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
-var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-app.RegisterWithConsul(lifetime, builder.Configuration, conf =>
-{
-    conf.ID = "DiscountGrpcService-" + Guid.NewGuid();
-    conf.Name = "DiscountGrpcService";
-    conf.Tags = ["DiscountGrpcService", "DiscountGrpc"];
-});
+//var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+//app.RegisterWithConsul(lifetime, builder.Configuration, conf =>
+//{
+//    conf.ID = "DiscountGrpcService-" + Guid.NewGuid();
+//    conf.Name = "DiscountGrpcService";
+//    conf.Tags = ["DiscountGrpcService", "DiscountGrpc"];
+//});
 
 app.MapGrpcService<DiscountService>();
 

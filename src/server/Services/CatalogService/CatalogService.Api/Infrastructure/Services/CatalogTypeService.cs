@@ -4,6 +4,7 @@ using CatalogService.Api.Infrastructure.Context;
 using CommonLibrary.Models;
 using CommonLibrary.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Net;
 
 namespace CatalogService.Api.Infrastructure.Services
@@ -11,12 +12,12 @@ namespace CatalogService.Api.Infrastructure.Services
     public class CatalogTypeService(CatalogContext dbContext)
         : GenericRepository<CatalogContext, CatalogType, int>(dbContext), ICatalogTypeService
     {
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogType>>> CatalogTypesAsync(int pageIndex, int pageSize, string ids)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogType>>> CatalogTypesAsync(PaginationRequestModel request, string ids)
         {
             if (!string.IsNullOrEmpty(ids))
             {
                 var items = await GetCatalogTypesByIdsAsync(ids);
-                var paginatedItems = new PaginatedItemsViewModel<CatalogType>(pageIndex, pageSize, items.Count, items);
+                var paginatedItems = new PaginatedItemsViewModel<CatalogType>(request.Page, request.PageSize, items.Count, items);
                 return ResponseDto<PaginatedItemsViewModel<CatalogType>>
                    .GenerateResponse(items.Count > 0)
                    .Success(paginatedItems, HttpStatusCode.OK)
@@ -25,29 +26,29 @@ namespace CatalogService.Api.Infrastructure.Services
 
             var totalItems = await GetAll()
                 .LongCountAsync();
-            var itemsOnPage = await GetAll()
-                .OrderBy(c => c.Type)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
 
-            var model = new PaginatedItemsViewModel<CatalogType>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var itemsOnPage = GetAll();
+            itemsOnPage = itemsOnPage.OrderBy(c => c.Type);
+
+            if(request.PageSize == 0)
+                itemsOnPage = itemsOnPage.Skip(request.PageSize * request.Page).Take(request.PageSize);
+
+            var model = new PaginatedItemsViewModel<CatalogType>(request.Page, request.PageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogType>>.Success(model, HttpStatusCode.OK);
         }
 
-        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogType>>> CatalogTypesAsync(string type, int pageIndex, int pageSize)
+        public async Task<ResponseDto<PaginatedItemsViewModel<CatalogType>>> CatalogTypesAsync(string type, PaginationRequestModel request)
         {
             var totalItems = await GetAll()
                 .Where(ct => ct.Type.Contains(type))
                 .LongCountAsync();
-            var itemsOnPage = await GetAll()
-                .Where(ct => ct.Type.Contains(type))
-                .OrderBy(c => c.Type)
-                .Skip(pageSize * pageIndex)
-                .Take(pageSize)
-                .ToListAsync();
+            var itemsOnPage = GetAll().Where(ct => ct.Type.Contains(type));
+            itemsOnPage = itemsOnPage.OrderBy(c => c.Type);
+                
+            if (request.PageSize == 0)
+                itemsOnPage = itemsOnPage.Skip(request.PageSize * request.Page).Take(request.PageSize);
 
-            var model = new PaginatedItemsViewModel<CatalogType>(pageIndex, pageSize, totalItems, itemsOnPage);
+            var model = new PaginatedItemsViewModel<CatalogType>(request.Page, request.PageSize, totalItems, itemsOnPage);
             return ResponseDto<PaginatedItemsViewModel<CatalogType>>.Success(model, HttpStatusCode.OK);
         }
 

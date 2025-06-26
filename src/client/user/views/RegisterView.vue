@@ -1,39 +1,34 @@
 <template>
     <div class="main">
         <div class="login-container">
-            <h2>Login</h2>
-            <form @submit.prevent="login">
-                <input type="text" name="username" v-model="user.username" placeholder="Username" required>
+            <h2>Register</h2>
+            <form @submit.prevent="register">
+                <input type="text" v-model="user.username" name="username" placeholder="Username" required>
+                <input type="text" v-model="user.fullname" name="fullname" placeholder="Name Surname" required>
+                <input type="email" v-model="user.email" name="email" placeholder="Email" required>
                 <input type="password" v-model="user.password" name="password" placeholder="Password" required>
-                <button type="submit">Login</button>
+                <button type="submit">Register</button>
             </form>
             <div class="signup-link">
-                <RouterLink :to="{ name: 'register' }">Register</RouterLink>
+                <RouterLink :to="{ name: 'login' }">Login</RouterLink>
             </div>
         </div>
     </div>
 </template>
 
-<script lang='ts'>
-import { useUserStore } from '@admin/helpers/store';
-import { LoginRequestDto } from '@shared/models/AuthModels/LoginRequestDto';
-import { LoginResponseDto } from '@shared/models/AuthModels/LoginResponseDto';
-import emitter from '@admin/helpers/eventBus';
-
+<script lang="ts">
+import { RegisterDto } from '@shared/models/AuthModels/RegisterDto';
+import emitter from '@user/helpers/eventBus';
 export default {
     data() {
         return {
-            user: new LoginRequestDto()
+            user: new RegisterDto()
         }
     },
     methods: {
-        login() {
+        register() {
             emitter.emit('show-spinner');
-            this.$axios.post('auth/login', this.user)
-                .then(res => {
-                    useUserStore().setUserInfo(res.data as LoginResponseDto)
-                    this.$router.push({ name: 'catalog' })
-                })
+            this.$axios.post('auth/register', this.user)
                 .finally(() => emitter.emit('hide-spinner'));
         }
     }
@@ -41,8 +36,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .main {
+    margin: auto;
     margin: 0;
     padding: 0;
     background: #f0f2f5;
@@ -76,6 +72,7 @@ form {
 }
 
 form input[type="text"],
+form input[type="email"],
 form input[type="password"] {
     width: 100%;
     padding: 12px;

@@ -1,12 +1,12 @@
 <template>
-    <h1 class="h3 mb-2 text-gray-800">Siparişler</h1>
+    <h1 class="h3 mb-2 text-gray-800">Orders</h1>
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
                 <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                     <div class="row mb-1">
                         <div class="col-sm-12 col-md-6">
-                            <div class="dataTables_length" id="dataTable_length"><label>Göster <select
+                            <div class="dataTables_length" id="dataTable_length"><label>Show <select
                                         @change="changePageSize" name="dataTable_length" aria-controls="dataTable"
                                         class="custom-select custom-select-sm form-control form-control-sm"
                                         v-model="pageSize">
@@ -29,27 +29,27 @@
                                         </th>
                                         <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1" colspan="1"
                                             aria-sort="ascending" aria-label="Name: activate to sort column descending">
-                                            Tarih</th>
+                                            Date</th>
                                         <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1" colspan="1"
                                             aria-sort="ascending" aria-label="Name: activate to sort column descending">
-                                            Açıklama</th>
+                                            Description</th>
                                         <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1" colspan="1"
                                             aria-sort="ascending" aria-label="Name: activate to sort column descending">
-                                            Adres</th>
+                                            Address</th>
                                         <th class="col-2" tabindex="1" aria-controls="dataTable" rowspan="1" colspan="1"
                                             aria-sort="ascending" aria-label="Name: activate to sort column descending">
-                                            Toplam Tutar</th>
+                                            Total Amount</th>
                                         <th class="col-1" tabindex="3" aria-controls="dataTable" rowspan="1" colspan="1"
-                                            aria-label="Salary: activate to sort column ascending">Sipariş Detayları
+                                            aria-label="Salary: activate to sort column ascending">Order Detail
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(order, index) in orders.data" :class="index % 2 == 0 ? 'even' : 'odd'"
                                         :key="order.id">
-                                        <td>{{ index + 1 }}</td>
+                                        <td>{{ (index + 1) + page * pageSize }}</td>
                                         <td class="sorting_1">{{ formatDate(order.createDate)
-                                            }}</td>
+                                        }}</td>
                                         <td class="sorting_1">{{ order.description }}</td>
                                         <td class="sorting_1">{{ order.city }} / {{ order.country }}</td>
                                         <td class="sorting_1">{{ order.total }}</td>
@@ -76,37 +76,11 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-5">
                             <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                                Toplam Kayıt : {{ orders.count }}
+                                Total Records : {{ orders.count }}
                             </div>
                         </div>
-                        <div class="col-sm-12 col-md-7">
-                            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
-                                <ul class="pagination">
-                                    <li :class="['paginate_button', 'page-item', 'previous', orders.hasPrevious ? '' : 'disabled']"
-                                        id="dataTable_previous"><button aria-controls="dataTable"
-                                            :data-dt-idx="orders.pageIndex" tabindex="0" class="page-link"
-                                            @click="changePageIndex(orders.pageIndex - 1)">Önceki</button></li>
-                                    <li class="paginate_button page-item" v-if="orders.hasPrevious">
-                                        <button @click="changePageIndex(orders.pageIndex - 1)" aria-controls="dataTable"
-                                            :data-dt-idx="orders.pageIndex" tabindex="0" class="page-link">{{
-                                                orders.pageIndex }}</button>
-                                    </li>
-                                    <li class="paginate_button page-item active">
-                                        <button @click="changePageIndex(orders.pageIndex)" aria-controls="dataTable"
-                                            :data-dt-idx="orders.pageIndex + 1" tabindex="0" class="page-link">{{
-                                                orders.pageIndex + 1 }}</button>
-                                    </li>
-                                    <li class="paginate_button page-item" v-if="orders.hasNext">
-                                        <button @click="changePageIndex(orders.pageIndex + 1)" aria-controls="dataTable"
-                                            :data-dt-idx="orders.pageIndex + 2" tabindex="0" class="page-link">{{
-                                                orders.pageIndex + 2 }}</button>
-                                    </li>
-                                    <li :class="['paginate_button', 'page-item', 'next', orders.hasNext ? '' : 'disabled']"
-                                        id="dataTable_next"><button href="#" aria-controls="dataTable"
-                                            :data-dt-idx="orders.pageIndex + 2" tabindex="0" class="page-link"
-                                            @click="changePageIndex(orders.pageIndex + 1)">Sonraki</button></li>
-                                </ul>
-                            </div>
+                        <div class="row justify-content-center">
+                            <PaginationComponent @page-changed="pageChanged" :pagination-model="orders" />
                         </div>
                     </div>
                 </div>
@@ -119,7 +93,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Sipariş İçeriği</h5>
+                    <h5 class="modal-title">Order Details</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span>&times;</span>
                     </button>
@@ -130,15 +104,15 @@
                             <div>
                                 <b style="text-decoration: underline;">
                                     {{ index + 1 }}. {{ orderItem.itemName }}</b><br>
-                                - Adet : {{ orderItem.units }}<br>
-                                - Fiyat : {{ orderItem.unitPrice }}
+                                - Quantity : {{ orderItem.units }}<br>
+                                - Price : {{ orderItem.unitPrice }}
 
                             </div><br>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success">Kapat</button>
+                    <button class="btn btn-success">Close</button>
                 </div>
             </div>
         </div>
@@ -150,12 +124,16 @@ import { OrderItemListDto } from '@shared/models/OrderItems/OrderItemListDto';
 import { OrderListDto } from '@shared/models/Orders/OrderListDto';
 import { PaginationModel } from '@shared/models/PaginationModel';
 import { formatDate } from '@shared/helpers/dateHelper'
+import PaginationComponent from '@admin/components/shared/pagination.vue'
 
 export default {
+    components: {
+        PaginationComponent
+    },
     data() {
         return {
             pageSize: 10,
-            pageIndex: 0,
+            page: 0,
             orderItems: [] as OrderItemListDto[],
             orders: new PaginationModel<OrderListDto>()
         }
@@ -165,11 +143,15 @@ export default {
     },
     methods: {
         formatDate,
-        changePageIndex(pageIndex: number) {
-            this.pageIndex = pageIndex;
+        changePage(page: number) {
+            this.page = page;
             this.getOrders();
         },
         changePageSize() {
+            this.getOrders();
+        },
+        pageChanged(pagination) {
+            this.page = pagination.page;
             this.getOrders();
         },
         getOrderById(orderId: string) {
@@ -177,10 +159,10 @@ export default {
                 .then(res => res.data);
         },
         getOrders() {
-            return this.$axios.get(`orders`)
+            return this.$axios.get(`orders?page=${this.page}&pageSize=${this.pageSize}`)
                 .then(res => {
                     Object.assign(this.orders, res.data);
-                    this.pageIndex = this.orders.pageIndex;
+                    this.page = this.orders.page;
                 });
         },
         getOrderItems(orderId: string) {
